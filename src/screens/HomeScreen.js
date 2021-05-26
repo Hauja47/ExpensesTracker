@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,29 +7,49 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  TouchableHighlight,
+  Animated
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { openDatabase } from 'react-native-sqlite-storage';
-import { COLORS, FONTS, SIZES } from '../constants/theme';
-import { down_arrow, up_arrow } from '../constants/icons';
 import { Picker } from '@react-native-picker/picker';
 import { useIsFocused } from '@react-navigation/native'
 import NumberFormat from 'react-number-format';
+import MonthPicker from 'react-native-month-year-picker'
+
+import { COLORS, FONTS, SIZES } from '../constants/theme';
+import { down_arrow, up_arrow, drop_down_arrow } from '../constants/icons';
 
 import { getCategories } from '../redux/actions/categoriesAction';
 import { getTransactions } from '../redux/actions/transactionsAction'
 
-import Mybutton from './components/Mybutton';
-
 const { DateTime } = require("luxon");
 const db = openDatabase({ name: 'fiance.db' });
 
+const transactionType = [
+  {
+    id: 1,
+    name: 'Chi tiêu',
+    color: COLORS.red,
+    icon: down_arrow,
+    type: 'expense'
+  },
+  {
+    id: 2,
+    name: 'Thu nhập',
+    color: COLORS.darkgreen,
+    icon: up_arrow,
+    type: 'income'
+  }
+]
+
 const HomeScreen = ({ navigation }) => {
 
-  const [selectedTransactionType, setSelectedTransactionType] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(null);
-  const [categoriesItem, setCategoriesItem] = useState([]);
+  const [selectedTransactionType, setSelectedTransactionType] = useState('all');
+  const [categoriesItem, setCategoriesItem] = useState(categories);
   const [transactionItem, setTransactionItem] = useState([]);
+  const [showMYP, setshowMYP] = useState(false);
+  const [date, setDate] = useState(new Date())
 
   const { categories } = useSelector(state => state.categoriesReducer);
   const { transactions } = useSelector(state => state.transactionsReducer);
@@ -38,103 +58,56 @@ const HomeScreen = ({ navigation }) => {
   const fetchCategories = () => dispatch(getCategories());
   const fetchTransactions = () => dispatch(getTransactions());
 
-  const transactionType = [
-    {
-      id: 1,
-      name: 'Chi tiêu',
-      color: COLORS.red,
-      icon: down_arrow
-    },
-    {
-      id: 2,
-      name: 'Thu nhập',
-      color: COLORS.darkgreen,
-      icon: up_arrow
-    }
-  ]
-
-  const isFocus = useIsFocused()
-
-  function convertDate(date) {
-    const converDate = DateTime.fromSeconds(Number(date))
-    return converDate.toISODate();
-  }
+  const categoryListHeightAnimationValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     fetchCategories();
-    createTRANSACDATE();
     fetchTransactions();
   }, []);
 
-  const createTRANSACDATE = () => {
-    db.transaction((txn) => {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='TRANSACDATE'",
-        [],
-        function (tx, res) {
-          // console.log('TRANSACDATE\'s item:', res.rows.length);
-          if (res.rows.length == 0) {
-            txn.executeSql(
-              'DROP TABLE IF EXISTS TRANSACDATE',
-              [],
-              () => { },
-              (err) => { console.log(err.message) }
-            );
-
-            txn.executeSql(
-              'CREATE TABLE TRANSACDATE (id INTEGER PRIMARY KEY AUTOINCREMENT, date INTERGER UNIQUE);',
-              [],
-              () => { },
-              (err) => { console.log(err.message) }
-            );
-
-            txn.executeSql(
-              'INSERT INTO TRANSACDATE(date) VALUES(?), (?), (?), (?), (?);',
-              [
-                1621555200,
-                1629331200,
-                1634256000,
-                1634342400,
-                1635120000
-              ],
-              () => { },
-              (err) => { console.log(err.message) }
-            );
-          }
-        }
-      )
-    })
-  }
-
   const renderMonthYearPicker = () => {
+    const onValueChange = React.useCallback(
+      (event, newDate) => {
+        const selectedDate = newDate || date;
+
+        console.log(date, newDate)
+        setshowMYP(false);
+        setDate(selectedDate);
+      },
+      [date, showMYP],
+    );
+
     return (
-      <View style={{ flexDirection: 'row', marginLeft: 10 }}>
-        <Picker
-          style={{ width: 70, marginTop: 25 }}
-          selectedValue={selectedMonth}
-          onValueChange={(itemValue, itemIndex) => setSelectedMonth(itemValue)}>
-          <Picker.Item label="1" value="1" />
-          <Picker.Item label="2" value="2" />
-          <Picker.Item label="3" value="3" />
-          <Picker.Item label="4" value="4" />
-          <Picker.Item label="5" value="5" />
-          <Picker.Item label="6" value="6" />
-          <Picker.Item label="7" value="7" />
-          <Picker.Item label="8" value="8" />
-          <Picker.Item label="9" value="9" />
-          <Picker.Item label="10" value="10" />
-          <Picker.Item label="11" value="11" />
-          <Picker.Item label="12" value="12" />
-        </Picker>
-        <Picker
-          style={{ width: 100, marginTop: 25 }}
-          selectedValue={selectedMonth}
-          onValueChange={(itemValue, itemIndex) => setSelectedMonth(itemValue)}>
-          <Picker.Item label="2017" value="1" />
-          <Picker.Item label="2018" value="2" />
-          <Picker.Item label="2019" value="3" />
-          <Picker.Item label="2020" value="4" />
-        </Picker>
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row',
+            paddingHorizontal: 20,
+            paddingVertical: 10,
+            marginLeft: 10,
+            borderRadius: 25,
+            backgroundColor: COLORS.blue
+          }}
+          onPress={() => setshowMYP(true)}
+        >
+          <Text style={{ ...FONTS.h3, color: COLORS.white }}>Tháng</Text>
+          <Text style={{ ...FONTS.h3, color: COLORS.white }}> {date.getMonth() + 1}</Text>
+          <Text style={{ ...FONTS.h3, color: COLORS.white }}> năm</Text>
+          <Text style={{ ...FONTS.h3, color: COLORS.white }}> {date.getFullYear()}</Text>
+          <Image
+            source={drop_down_arrow}
+            style={{ height: 15, width: 15, tintColor: COLORS.white, alignSelf: 'center', marginLeft: 5 }} />
+        </TouchableOpacity>
+        {showMYP && (
+          <MonthPicker
+            onChange={onValueChange}
+            value={date}
+            locale="vi"
+            okButton="Chọn"
+            cancelButton="Trở về"
+            mode='shortNumber'
+          />
+        )}
       </View>
     )
   }
@@ -145,38 +118,48 @@ const HomeScreen = ({ navigation }) => {
         style={{
           flexDirection: 'row',
           height: 40,
-          marginLeft: 20,
           marginTop: 2,
           borderRadius: 22,
           paddingHorizontal: SIZES.base,
-          backgroundColor: (selectedTransactionType && selectedTransactionType.name == item.name) ? item.color : COLORS.yellow
+          backgroundColor: (selectedTransactionType && selectedTransactionType == item.type) ? item.color : 'gold'
         }}
         onPress={() => {
-          if (selectedTransactionType === null) {
-            setSelectedTransactionType(item)
-            return;
+          if (selectedTransactionType == 'all') {
+            setSelectedTransactionType(item.type)
+            Animated.timing(categoryListHeightAnimationValue, {
+              toValue: 55,
+              duration: 500,
+              useNativeDriver: false,
+            }).start()
+            console.log(selectedTransactionType)
+          } else if (selectedTransactionType == item.type) {
+            setSelectedTransactionType('all')
+            Animated.timing(categoryListHeightAnimationValue, {
+              toValue: 0,
+              duration: 500,
+              useNativeDriver: false,
+            }).start()
+            console.log(selectedTransactionType)
+          } else {
+            setSelectedTransactionType(item.type)
           }
-          setSelectedTransactionType((item.name == selectedTransactionType.name) ? { color: COLORS.yellow } : item)
         }}
       >
-        {/* Name/Category */}
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
           <Image
             source={item.icon}
             style={{
               width: 17,
               height: 17,
-              tintColor: (selectedTransactionType && selectedTransactionType.name == item.name) ? COLORS.white : item.color,
+              tintColor: (selectedTransactionType && selectedTransactionType == item.type) ? COLORS.white : item.color,
             }}
           />
           <Text style={{
             marginLeft: SIZES.base,
             ...FONTS.h3,
-            color: (selectedTransactionType && selectedTransactionType.name == item.name) ? COLORS.white : COLORS.primary
+            color: (selectedTransactionType && selectedTransactionType == item.type) ? COLORS.white : COLORS.primary
           }}>{item.name}</Text>
         </View>
-
-        {/* Expenses */}
         <NumberFormat
           value={'1000'}
           displayType={'text'}
@@ -186,7 +169,7 @@ const HomeScreen = ({ navigation }) => {
             <View style={{ justifyContent: 'center' }}>
               <Text style={{
                 ...FONTS.h3,
-                color: (selectedTransactionType && selectedTransactionType.name == item.name) ? COLORS.white : COLORS.primary
+                color: (selectedTransactionType && selectedTransactionType == item.type) ? COLORS.white : COLORS.primary
               }}>{formattedValue}</Text>
             </View>
           }
@@ -223,19 +206,41 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
+  const getFilteredData = (type) => {
+    let temp = categories.filter(category => category.type == type)
+    return temp;
+  }
+
   const renderCategoryList = () => {
     return (
-      <FlatList
-        data={categories}
-        renderItem={renderCategoryListItem}
-        keyExtractor={item => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      />
+      <View style={{ height: 55 }}>
+        {
+          selectedTransactionType != 'all' &&
+          <FlatList
+            data={getFilteredData(selectedTransactionType)}
+            renderItem={renderCategoryListItem}
+            keyExtractor={item => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+        }
+      </View>
     )
   }
 
   const renderTransactionInfo = () => {
+    const totalAmountInDay = (item, transacType) => {
+
+      let sum = item.filter((data) => {
+        return data.type == transacType;
+      }).map((data, index, array) => {
+        return data.amount;
+      }).reduce((acc, curValue, curIndex, array) => {
+        return acc + curValue;
+      }, 0)
+
+      return sum;
+    }
 
     const renderTransactionInfoItemData = ({ item }) => {
       return (
@@ -244,7 +249,8 @@ const HomeScreen = ({ navigation }) => {
         }}>
           <TouchableOpacity style={{
             flexDirection: 'row'
-          }}>
+          }}
+          >
             <View style={{ flex: 1 }}>
               <Text style={{ ...FONTS.h3, color: COLORS.black }}>{item.name}</Text>
               <Text style={{ ...FONTS.body3, color: COLORS.darkgray }} ellipsizeMode='clip' numberOfLines={1}>{item.description}</Text>
@@ -264,8 +270,7 @@ const HomeScreen = ({ navigation }) => {
                       ...FONTS.h3,
                       color: (item.type == 'expense') ? COLORS.red : COLORS.darkgreen,
                     }}
-                    numberOfLines={1}>{formattedValue}
-                  </Text>
+                    numberOfLines={1}>{formattedValue}</Text>
                 }
               />
             </View>
@@ -276,57 +281,98 @@ const HomeScreen = ({ navigation }) => {
 
     const renderTransactionInfoItem = ({ item }) => {
       return (
-        <View style={{
-          flex: 1,
-          flexDirection: 'row',
-          elevation: 2,
-          borderRadius: 20
-        }}>
-          <View style={{
-            paddingHorizontal: 15,
-            paddingVertical: 5,
-            alignItems: 'center',
-          }}
-          >
-            <Text style={{ ...FONTS.h4, color: COLORS.darkgray }}>Ngày</Text>
-            <Text style={{ fontSize: 35, color: COLORS.blue }}>{convertDate(item.date).split('-')[2]}</Text>
-          </View>
-          <View style={{
-            width: 0.5,
-            marginTop: 2,
-            backgroundColor: '#c8c7cc',
-            height: '100%'
-          }} />
+        <View
+          style={{ flex: 1, borderWidth: 0.1, borderRadius: 5 }}
+        >
           <View style={{
             flex: 1,
-            justifyContent: 'center',
+            flexDirection: 'row',
           }}>
-            <FlatList
-              data={item.data}
-              keyExtractor={item => item.id}
-              renderItem={renderTransactionInfoItemData}
-              ItemSeparatorComponent={() => (
-                <View style={{
-                  padding: 0.5,
-                  marginTop: 2,
-                  backgroundColor: '#c8c7cc',
-                  marginVertical: 2,
-                }} />
-              )}
-            />
+            <View style={{
+              paddingHorizontal: 15,
+              paddingVertical: 5,
+              alignItems: 'center',
+            }}
+            >
+              <Text style={{ ...FONTS.h4, color: COLORS.darkgray }}>Ngày</Text>
+              <Text style={{ fontSize: 35, color: COLORS.blue }}>{(item.date).split('-')[2]}</Text>
+            </View>
+            <View style={{
+              width: 0.5,
+              backgroundColor: '#c8c7cc',
+              height: '100%'
+            }} />
+            <View style={{
+              flex: 1,
+              justifyContent: 'center',
+            }}>
+              <FlatList
+                data={item.data}
+                keyExtractor={item => item.id}
+                renderItem={renderTransactionInfoItemData}
+                ItemSeparatorComponent={() => (
+                  <View style={{
+                    padding: 0.5,
+                    marginTop: 2,
+                    backgroundColor: '#c8c7cc',
+                    marginVertical: 2,
+                  }} />
+                )}
+              />
+            </View>
           </View>
-          <View>
-
+          <View style={{
+            flex: 1,
+            flexDirection: 'row-reverse',
+            paddingHorizontal: 2,
+            paddingVertical: 7,
+            borderTopWidth: 0.3,
+            borderColor: '#c8c7cc',
+          }}>
+            <View style={{ paddingHorizontal: 10, flexDirection: 'row' }}>
+              <Text style={{ ...FONTS.body4, color: COLORS.darkgray }}>Thu nhập: </Text>
+              <NumberFormat
+                value={totalAmountInDay(item.data, 'income')}
+                displayType={'text'}
+                thousandSeparator={true}
+                suffix='đ'
+                renderText={formattedValue =>
+                  <Text
+                    style={{
+                      color: COLORS.darkgreen,
+                      ...FONTS.h4
+                    }}
+                    numberOfLines={1}>{formattedValue}</Text>
+                }
+              />
+            </View>
+            <View style={{ paddingHorizontal: 10, flexDirection: 'row' }}>
+              <Text style={{ ...FONTS.body4, color: COLORS.darkgray }}>Chi tiêu: </Text>
+              <NumberFormat
+                value={totalAmountInDay(item.data, 'expense')}
+                displayType={'text'}
+                thousandSeparator={true}
+                suffix='đ'
+                renderText={formattedValue =>
+                  <Text
+                    style={{
+                      color: COLORS.red,
+                      ...FONTS.h4
+                    }}
+                    numberOfLines={1}>{formattedValue}</Text>
+                }
+              />
+            </View>
           </View>
         </View>
       )
     }
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, marginTop: 10 }}>
         <FlatList
           contentContainerStyle={{
-            paddingBottom: 10
+            paddingBottom: 10,
           }}
           showsVerticalScrollIndicator={false}
           data={transactions.sort()}
@@ -349,36 +395,39 @@ const HomeScreen = ({ navigation }) => {
       <View style={{
         ...styles.container,
         ...styles.shadow,
-        backgroundColor: COLORS.yellow,
+        backgroundColor: 'gold',
         height: 250,
       }}>
-        <View>
+        <View
+          style={{ flex: 1, padding: 22 }}
+        >
           <Text style={{ ...FONTS.body2, color: COLORS.darkgray }}>Số dư</Text>
           <Text style={{ ...FONTS.h1, fontSize: 35, color: COLORS.primary, marginTop: 5 }}>100.000.000 đ</Text>
         </View>
-        <View style={{ position: 'absolute', bottom: 10, width: '105%' }}>
+        <View style={{ width: '100%', alignSelf: 'center', paddingHorizontal: 10, paddingBottom: 10 }}>
           {renderMonthYearPicker()}
           {renderTransactionType()}
         </View>
       </View>
 
-      <View style={{ height: 55, marginTop: 10 }}>
+      <Animated.View style={{ height: categoryListHeightAnimationValue, marginTop: 10 }}>
         {renderCategoryList()}
-      </View>
+      </Animated.View>
 
-      <View style={{ flex: 1, marginTop: 10 }}>
-        {renderTransactionInfo()}
-      </View>
+      {renderTransactionInfo()}
 
-      {/* <Mybutton
-        title="View All"
-        customClick={() => navigation.navigate('ViewAll')}
-      /> */}
-
-      {/* <Mybutton
-        title="AddTransaction"
-        customClick={() => navigation.navigate('AddTransaction')}
-      /> */}
+      <TouchableOpacity
+        style={{
+          width: 60,
+          height: 60,
+          borderRadius: 30,
+          position: 'absolute',
+          backgroundColor: COLORS.blue,
+          bottom: 20,
+          right: 20
+        }}
+        onPress={() => navigation.navigate('AddTransaction')}
+      />
     </SafeAreaView >
   );
 };
@@ -397,10 +446,8 @@ const styles = StyleSheet.create({
   },
   container: {
     borderRadius: 40,
-    padding: 22,
     width: '100%'
   },
 })
-
 
 export default HomeScreen;

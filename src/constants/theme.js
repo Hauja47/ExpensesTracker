@@ -20,6 +20,7 @@ export const COLORS = {
     peach: '#FF615F',
     purple: '#8e44ad',
     red: '#ff1744',
+    green: '#049a5b'
 };
 
 export const SIZES = {

@@ -1,5 +1,3 @@
-// Example: Example of SQLite Database in React Native
-// https://aboutreact.com/example-of-sqlite-database-in-react-native
 import 'react-native-gesture-handler';
 
 import * as React from 'react';
@@ -40,6 +38,7 @@ const App = () => {
           <Stack.Screen
             name="AddTransaction"
             component={AddTransaction}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>

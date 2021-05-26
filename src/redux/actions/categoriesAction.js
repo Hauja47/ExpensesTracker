@@ -1,11 +1,6 @@
 import { ADD_CATEGORIES, GET_CATEGORIES } from './actions';
 
-import {
-    Alert
-} from 'react-native';
-
 import { openDatabase } from 'react-native-sqlite-storage';
-
 const db = openDatabase({ name: 'fiance.db' });
 
 const createCATEGORY = () => {
@@ -59,11 +54,9 @@ export const getCategories = () => {
                 [],
                 function (tx, res) {
                     let temp = []
-                    console.log('CATEGORY\'s item:', res.rows.length);
                     for (let i = 0; i < res.rows.length; i++) {
                         temp.push(res.rows.item(i))
                     }
-                    console.log('categories\'s item:', temp);
 
                     dispatch({
                         type: GET_CATEGORIES,
@@ -93,19 +86,6 @@ export const addCategory = ({ navigation }, category) => dispatch => {
                         })
                     }
                 )
-                if (results.rowsAffected > 0) {
-                    Alert.alert(
-                        'Success',
-                        'You are Registered Successfully',
-                        [
-                            {
-                                text: 'Ok',
-                                onPress: () => navigation.navigate('HomeScreen'),
-                            },
-                        ],
-                        { cancelable: false }
-                    );
-                } else alert('Registration Failed');
             }
         );
     }, (err) => { console.log('fail', err) }, () => { console.log('success') });
