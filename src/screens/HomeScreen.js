@@ -7,13 +7,9 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  TouchableHighlight,
   Animated
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { openDatabase } from 'react-native-sqlite-storage';
-import { Picker } from '@react-native-picker/picker';
-import { useIsFocused } from '@react-navigation/native'
 import NumberFormat from 'react-number-format';
 import MonthPicker from 'react-native-month-year-picker'
 
@@ -22,9 +18,6 @@ import { down_arrow, up_arrow, drop_down_arrow } from '../constants/icons';
 
 import { getCategories } from '../redux/actions/categoriesAction';
 import { getTransactions } from '../redux/actions/transactionsAction'
-
-const { DateTime } = require("luxon");
-const db = openDatabase({ name: 'fiance.db' });
 
 const transactionType = [
   {
@@ -90,10 +83,7 @@ const HomeScreen = ({ navigation }) => {
           }}
           onPress={() => setshowMYP(true)}
         >
-          <Text style={{ ...FONTS.h3, color: COLORS.white }}>Tháng</Text>
-          <Text style={{ ...FONTS.h3, color: COLORS.white }}> {date.getMonth() + 1}</Text>
-          <Text style={{ ...FONTS.h3, color: COLORS.white }}> năm</Text>
-          <Text style={{ ...FONTS.h3, color: COLORS.white }}> {date.getFullYear()}</Text>
+          <Text style={{ ...FONTS.h3, color: COLORS.white }}>Tháng {date.getMonth() + 1} năm {date.getFullYear()}</Text>
           <Image
             source={drop_down_arrow}
             style={{ height: 15, width: 15, tintColor: COLORS.white, alignSelf: 'center', marginLeft: 5 }} />
@@ -245,12 +235,11 @@ const HomeScreen = ({ navigation }) => {
     const renderTransactionInfoItemData = ({ item }) => {
       return (
         <View style={{
-          padding: 10
+          padding: 10,
         }}>
           <TouchableOpacity style={{
             flexDirection: 'row'
-          }}
-          >
+          }}>
             <View style={{ flex: 1 }}>
               <Text style={{ ...FONTS.h3, color: COLORS.black }}>{item.name}</Text>
               <Text style={{ ...FONTS.body3, color: COLORS.darkgray }} ellipsizeMode='clip' numberOfLines={1}>{item.description}</Text>
@@ -282,7 +271,7 @@ const HomeScreen = ({ navigation }) => {
     const renderTransactionInfoItem = ({ item }) => {
       return (
         <View
-          style={{ flex: 1, borderWidth: 0.1, borderRadius: 5 }}
+          style={{ flex: 1, borderRadius: 15, backgroundColor: 'white', elevation: 7 }}
         >
           <View style={{
             flex: 1,
@@ -292,16 +281,12 @@ const HomeScreen = ({ navigation }) => {
               paddingHorizontal: 15,
               paddingVertical: 5,
               alignItems: 'center',
-            }}
-            >
+              borderRightWidth: 0.5,
+              borderColor: '#c8c7cc',
+            }}>
               <Text style={{ ...FONTS.h4, color: COLORS.darkgray }}>Ngày</Text>
               <Text style={{ fontSize: 35, color: COLORS.blue }}>{(item.date).split('-')[2]}</Text>
             </View>
-            <View style={{
-              width: 0.5,
-              backgroundColor: '#c8c7cc',
-              height: '100%'
-            }} />
             <View style={{
               flex: 1,
               justifyContent: 'center',
@@ -326,7 +311,7 @@ const HomeScreen = ({ navigation }) => {
             flexDirection: 'row-reverse',
             paddingHorizontal: 2,
             paddingVertical: 7,
-            borderTopWidth: 0.3,
+            borderTopWidth: 0.5,
             borderColor: '#c8c7cc',
           }}>
             <View style={{ paddingHorizontal: 10, flexDirection: 'row' }}>
@@ -372,7 +357,7 @@ const HomeScreen = ({ navigation }) => {
       <View style={{ flex: 1, marginTop: 10 }}>
         <FlatList
           contentContainerStyle={{
-            paddingBottom: 10,
+            padding: 10,
           }}
           showsVerticalScrollIndicator={false}
           data={transactions.sort()}
@@ -386,21 +371,16 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{
-      paddingHorizontal: 20,
-      paddingVertical: 27,
-      paddingBottom: 0,
       backgroundColor: COLORS.white,
-      flex: 1
+      flex: 1,
     }}>
       <View style={{
-        ...styles.container,
+        ...styles.walletContainer,
         ...styles.shadow,
         backgroundColor: 'gold',
         height: 250,
       }}>
-        <View
-          style={{ flex: 1, padding: 22 }}
-        >
+        <View style={{ flex: 1, padding: 22 }}>
           <Text style={{ ...FONTS.body2, color: COLORS.darkgray }}>Số dư</Text>
           <Text style={{ ...FONTS.h1, fontSize: 35, color: COLORS.primary, marginTop: 5 }}>100.000.000 đ</Text>
         </View>
@@ -415,6 +395,7 @@ const HomeScreen = ({ navigation }) => {
       </Animated.View>
 
       {renderTransactionInfo()}
+
 
       <TouchableOpacity
         style={{
@@ -432,21 +413,21 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   shadow: {
     shadowColor: "#000",
     shadowOffset: {
-      width: 2,
-      height: 2,
+      width: 0,
+      height: 3,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3,
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7,
   },
-  container: {
+  walletContainer: {
     borderRadius: 40,
-    width: '100%'
+    marginHorizontal: 10,
+    marginTop: 27
   },
 })
 
