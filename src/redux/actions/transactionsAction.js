@@ -15,11 +15,6 @@ const { DateTime } = require("luxon");
 const db = openDatabase({ name: 'fiance.db' });
 const { HEIGHT, WIDTH } = Dimensions.get('window');
 
-// function convertDate(date) {
-//     const converDate = DateTime.fromSeconds(Number(date))
-//     return converDate.toISODate();
-// }
-
 const createTRANSACTIONS = () => {
     db.transaction((txn) => {
         txn.executeSql(
@@ -72,12 +67,10 @@ export const getTransactions = () => {
                 "SELECT TRANSACTIONS.id, name, description, date, type, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id;",
                 [],
                 function (tx, res) {
-                    //console.log('TRANSACTIONS\'s item:', res.rows.length);
                     let result = []
                     for (let i = 0; i < res.rows.length; i++) {
                         result.push(res.rows.item(i))
                     }
-                    //console.log(result);
 
                     let transacItem = result.reduce((re, o) => {
                         let existObj = re.find(
