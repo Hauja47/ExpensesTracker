@@ -19,7 +19,6 @@ import ActionSheet from "react-native-actions-sheet";
 import NumberFormat from 'react-number-format';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { TabView, SceneMap } from 'react-native-tab-view';
 
 import { addTransaction } from '../redux/actions/transactionsAction';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
@@ -46,12 +45,6 @@ const AddTransaction = ({ navigation }) => {
     const [incomeCategories, setIncomeCategories] = useState([]);
     const [expenseCategories, setExpenseCategories] = useState([]);
     const [showDTPicker, setDTPickerVisible] = useState(false);
-
-    const [index, setIndex] = React.useState(0);
-    const [routes] = React.useState([
-        { key: 'first', title: 'Chi tiêu' },
-        { key: 'second', title: 'Thu nhập' },
-    ]);
 
     useEffect(() => {
         fetchCategories();
@@ -235,6 +228,13 @@ const AddTransaction = ({ navigation }) => {
                         textAlignVertical='top'
                     />
                 </View>
+                <View style={{
+                    bottom: 0
+                }}>
+                    <TouchableOpacity>
+                        <Text>Hello</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
             <ActionSheet
                 ref={actionSheetRef}
@@ -243,7 +243,7 @@ const AddTransaction = ({ navigation }) => {
             // gestureEnabled={true}
             >
                 <View style={styles.actionSheet}>
-                    {/* <Tab.Navigator
+                    <Tab.Navigator
                         swipeEnabled={true}
                         initialRouteName={'Chi tiêu'}
                         initialLayout={{ width: WIDTH }}
@@ -251,26 +251,7 @@ const AddTransaction = ({ navigation }) => {
                     >
                         <Tab.Screen name='Chi tiêu' component={Expense} />
                         <Tab.Screen name="Thu nhập" component={Income} />
-                    </Tab.Navigator> */}
-                    <TabView
-                        navigationState={{ index, routes }}
-                        renderScene={SceneMap({
-                            first: Expense,
-                            second: Income,
-                        })}
-                        onIndexChange={setIndex}
-                        initialLayout={{ width: WIDTH }}
-                        sceneContainerStyle={styles.container}
-                        swipeEnabled={true}
-                        onSwipeStart={() => {
-                            console.log('Swipping')
-                        }}
-                        onSwipeEnd={() => {
-                            console.log('End swipe')
-                        }}
-                        style={styles.actionSheet}
-                        sceneContainerStyle={styles.actionSheet}
-                    />
+                    </Tab.Navigator>
                 </View>
             </ActionSheet>
             {showDTPicker && (
