@@ -16,8 +16,7 @@ import MonthPicker from 'react-native-month-year-picker'
 import { COLORS, FONTS, SIZES } from '../constants/theme';
 import { down_arrow, up_arrow, drop_down_arrow } from '../constants/icons';
 
-import { getCategories } from '../redux/actions/categoriesAction';
-import { getTransactions } from '../redux/actions/transactionsAction'
+import { getCategories, getTransactions } from '../redux/actions/';
 
 const transactionType = [
   {
@@ -203,7 +202,7 @@ const HomeScreen = ({ navigation }) => {
 
   const renderCategoryList = () => {
     return (
-      <View style={{ height: 55 }}>
+      <View style={{ height: 55, marginLeft: 10 }}>
         {
           selectedTransactionType != 'all' &&
           <FlatList
@@ -390,12 +389,11 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <Animated.View style={{ height: categoryListHeightAnimationValue, marginTop: 10 }}>
+      <Animated.View style={{ height: categoryListHeightAnimationValue, marginTop: 0 }}>
         {renderCategoryList()}
       </Animated.View>
 
       {renderTransactionInfo()}
-
 
       <TouchableOpacity
         style={{
