@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import * as React from 'react';
-import { Button, View, Text } from 'react-native';
+// import { Button, View, Text } from 'react-native';
 import { openDatabase } from 'react-native-sqlite-storage'
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -13,8 +13,8 @@ import { store } from './src/redux/store';
 import {
   HomeScreen,
   TransactionDetail,
-  ViewAllUser,
-  AddTransaction
+  AddTransaction,
+  AddCategory
 } from './src/screens/';
 
 const Stack = createStackNavigator();
@@ -25,20 +25,18 @@ const App = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="HomeScreen">
+        <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{ headerShown: false }}>
           <Stack.Screen
             name="HomeScreen"
             component={HomeScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ViewAll"
-            component={ViewAllUser}
           />
           <Stack.Screen
             name="AddTransaction"
             component={AddTransaction}
-            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="AddCategory"
+            component={AddCategory}
           />
         </Stack.Navigator>
       </NavigationContainer>
