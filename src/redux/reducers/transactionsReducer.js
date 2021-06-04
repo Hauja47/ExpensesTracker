@@ -7,10 +7,18 @@ const initialState = {
 function categoriesReducer(state = initialState, action) {
     switch (action.type) {
         case ADD_TRANSACTIONS:
-            return {
-                ...state,
-                transactions: [...state.transactions, action.payload],
-            };
+            let found = transactions.find(element => element.date === action.payload.date);
+            if (found) {
+                return {
+                    ...state,
+                    transactions: found.data.push(action.payload),
+                };
+            } else {
+                return {
+                    ...state,
+                    transactions: [...state.transactions, action.payload],
+                };
+            }
         case GET_TRANSACTIONS:
             return {
                 ...state,
