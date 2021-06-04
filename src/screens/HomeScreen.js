@@ -37,9 +37,12 @@ const transactionType = [
 
 const HomeScreen = ({ navigation }) => {
 
+  useEffect(() => {
+    dispatch(getTransactions());
+    dispatch(getCategories());
+  }, [transactions, categories]);
+
   const [selectedTransactionType, setSelectedTransactionType] = useState('all');
-  const [categoriesItem, setCategoriesItem] = useState(categories);
-  const [transactionItem, setTransactionItem] = useState([]);
   const [showMYP, setshowMYP] = useState(false);
   const [date, setDate] = useState(new Date())
 
@@ -47,15 +50,7 @@ const HomeScreen = ({ navigation }) => {
   const { transactions } = useSelector(state => state.transactionsReducer);
   const dispatch = useDispatch();
 
-  const fetchCategories = () => dispatch(getCategories());
-  const fetchTransactions = () => dispatch(getTransactions());
-
   const categoryListHeightAnimationValue = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    fetchCategories();
-    fetchTransactions();
-  }, []);
 
   const renderMonthYearPicker = () => {
     const onValueChange = React.useCallback(
