@@ -274,7 +274,10 @@ const AddTransaction = ({ navigation }) => {
           </Tab.Navigator>
           <TouchableOpacity
             style={styles.addCategoryButton}
-            onPress={() => navigation.navigate('AddCategory')}
+            onPress={() => {
+              actionSheetRef.current?.setModalVisible(false);
+              navigation.navigate('AddCategory')
+            }}
           >
             <Text style={styles.categoryButtonText}>Thêm</Text>
           </TouchableOpacity>
