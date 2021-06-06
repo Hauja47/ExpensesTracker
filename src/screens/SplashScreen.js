@@ -4,24 +4,23 @@ import {
     SafeAreaView,
     StyleSheet,
 } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { COLORS } from '../constants/theme';
-import { getCategories, getTransactions } from '../redux/actions/';
+import { getCategories, getTransactions } from '../redux/actions'
 
-const SplashScreen = ({ navigation }) => {
+const SplashScreen = ({navigation}) => {
 
     const dispatch = useDispatch();
-    const { transactions } = useSelector(state => state.transactionsReducer);
-    const { categories } = useSelector(state => state.categoriesReducer);
+    const { isCategoriesLoaded } = useSelector(state => state.categoriesReducer)
+    const { isTransactionsLoaded } = useSelector(state => state.transactionsReducer)
 
     useEffect(() => {
-        navigation.navigate('HomeScreen');
-    }, [transactions, categories])
+        navigation.navigate('HomeScreen')
+    }, [isCategoriesLoaded, isTransactionsLoaded])
 
-    const getData = () => {
-        // console.log(transactions, categories)
-        dispatch(getTransactions());
+    const getData = ()  => {
         dispatch(getCategories());
+        dispatch(getTransactions());
     }
 
     return (
