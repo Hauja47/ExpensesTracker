@@ -1,11 +1,9 @@
 import 'react-native-gesture-handler';
 
 import * as React from 'react';
-// import { Button, View, Text } from 'react-native';
-import { openDatabase } from 'react-native-sqlite-storage'
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useDispatch } from 'react-redux';
 
 import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
@@ -14,18 +12,24 @@ import {
   HomeScreen,
   TransactionDetail,
   AddTransaction,
-  AddCategory
+  AddCategory,
+  SplashScreen
 } from './src/screens/';
 
 const Stack = createStackNavigator();
-
-var db = openDatabase({ name: 'fiance.db' });
 
 const App = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+          initialRouteName="SplashScreen"
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
+          />
           <Stack.Screen
             name="HomeScreen"
             component={HomeScreen}
