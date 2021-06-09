@@ -1,5 +1,5 @@
+import 'react-native-gesture-handler';
 import { ADD_TRANSACTIONS, GET_TRANSACTIONS } from './actions';
-
 import {
   Alert
 } from 'react-native';
@@ -71,7 +71,7 @@ export const getTransactions = () => {
             let existObj = re.find(
               obj => obj.date == o.date
             )
-      
+
             if (existObj) {
               existObj.data.push(o)
             } else {
@@ -93,7 +93,8 @@ export const getTransactions = () => {
   }
 }
 
-export const addTransaction = (transaction, { navigation }) => {
+export const addTransaction = (transaction, navigation) => {
+
   return dispatch => {
     db.transaction((txn) => {
       txn.executeSql(
@@ -106,44 +107,37 @@ export const addTransaction = (transaction, { navigation }) => {
         ],
         (tx, res) => {
           if (res.rowsAffected === 1) {
-
-            let temp = [{
-              date: transaction.date,
-              data: transaction
-            }]
-            console.log('data:', temp)
-
-            dispatch({
-              type: ADD_TRANSACTIONS,
-              payload: temp
-            })
-
-            Alert.alert(
-              'Thành công',
-              'Thêm giao dịch mới thành công',
+            txn.executeSql(
+              'SELECT * FROM TRANSACTIONS WHERE category_id=? and amount=? and description=? and date=?;',
               [
-                [
-                  {
-                    text: 'OK',
-                    onPress: () => navigation.navigate('HomeScreen'),
-                  },
-                ],
-                { cancelable: false }
-              ]
+                transaction.category_id,
+                transaction.amount,
+                transaction.description,
+                transaction.date,
+              ],
+              (tx, res) => {
+                let temp = res.rows.item(0);
+                console.log('temp:', temp)
+
+                Alert.alert(
+                  'Thành công',
+                  'Thêm giao dịch mới thành công',
+                  [
+                    { text: 'OK', onPress: () => { navigation.goBack() } },
+                  ],
+                  { cancelable: false }
+                )
+
+                dispatch({
+                  type: ADD_TRANSACTIONS,
+                  payload: temp
+                })
+              }
             )
           } else {
             Alert.alert(
               'Thất bại',
               'Đã có vấn đề xảy ra. Xin hãy thử lại!',
-              [
-                [
-                  {
-                    text: 'OK',
-                    // onPress: () => navigation.navigate('HomeScreen'),
-                  },
-                ],
-                { cancelable: false }
-              ]
             )
           }
         },
