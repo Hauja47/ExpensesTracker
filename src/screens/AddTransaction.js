@@ -17,11 +17,11 @@ import ActionSheet from "react-native-actions-sheet";
 import NumberFormat from 'react-number-format';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useIsFocused } from '@react-navigation/native';
 
 import { addTransaction } from '../redux/actions/transactionsAction';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
 import { cancel_icon, drop_down_arrow, paragrapgh, wallet, calendar } from '../constants/icons';
-import { getCategories } from '../redux/actions/categoriesAction';
 
 const Tab = createMaterialTopTabNavigator();
 const actionSheetRef = createRef();
@@ -32,8 +32,9 @@ const AddTransaction = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const { categories } = useSelector(state => state.categoriesReducer);
-  const fetchCategories = () => dispatch(getCategories());
 
+  const isFocus = useIsFocused();
+  
   const [date, setDate] = useState(new Date());
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -43,10 +44,9 @@ const AddTransaction = ({ navigation }) => {
   const [showDTPicker, setDTPickerVisible] = useState(false);
 
   useEffect(() => {
-    fetchCategories();
     GetCategoriesByType('expense');
     GetCategoriesByType('income');
-  }, [])
+  }, [isFocus])
 
   const GetCategoriesByType = async (type) => {
     let temp = categories.filter(category => category.type === type)
@@ -120,11 +120,7 @@ const AddTransaction = ({ navigation }) => {
     setDate(currentDate);
   };
 
-  const addToTransaction = (data) => {
-    dispatch(
-      addTransaction(data, { navigation })
-    )
-  }
+  const addToTransaction = (data) => dispatch(addTransaction(data, navigation))
 
   const checkNewTransaction = () => {
     if (amount === '') {
@@ -149,8 +145,6 @@ const AddTransaction = ({ navigation }) => {
       date: DateTime.fromISO(date.toISOString()).toFormat('yyyy-MM-dd'),
     }
 
-    console.log(data);
-
     addToTransaction(data);
   }
 
@@ -160,7 +154,7 @@ const AddTransaction = ({ navigation }) => {
         <View style={styles.navigationBar}>
           <TouchableOpacity
             style={styles.return}
-            onPress={() => navigation.navigate('HomeScreen')}
+            onPress={() => navigation.goBack()}
           >
             <Image
               source={cancel_icon}
@@ -215,16 +209,14 @@ const AddTransaction = ({ navigation }) => {
         </View>
       </View>
 
-      <View style={styles.container}>
+      <View style={[styles.container, { flex: 1 }]}>
         <View style={styles.containerTextInput}>
           <Image
             source={calendar}
             style={{ ...styles.icon, alignSelf: 'center', marginRight: 15 }}
           />
           <TouchableOpacity
-            onPress={() => {
-              setDTPickerVisible(true)
-            }}
+            onPress={() => { setDTPickerVisible(true) }}
           >
             <Text style={{ ...FONTS.h2, paddingVertical: 20 }}>{DateTime.fromISO(date.toISOString()).toFormat('dd/MM/yyyy')}</Text>
           </TouchableOpacity>
@@ -297,7 +289,6 @@ const AddTransaction = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: 'transparent'
   },
   header: {
