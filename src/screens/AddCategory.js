@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React, { useState } from 'react';
 import {
   TextInput,
@@ -8,8 +9,9 @@ import {
   Image,
   StyleSheet,
   TouchableHighlight,
+  Alert
 } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { COLORS, SIZES, FONTS } from '../constants/theme';
 import {
@@ -18,6 +20,7 @@ import {
   down_arrow,
   up_arrow
 } from '../constants/icons'
+import { addCategory } from '../redux/actions/categoriesAction';
 
 const transactionType = [
   {
@@ -32,8 +35,49 @@ const transactionType = [
 
 const AddCategory = ({ navigation }) => {
 
+  const { categories } = useSelector(state => state.categoriesReducer);
+
+  const dispatch = useDispatch();
+  const addToCategories = (category) => dispatch(addCategory(navigation, category))
+
   const [isIncomePressed, setIncomePressed] = useState(false);
   const [isExpensePressed, setExpensePressed] = useState(false);
+  const [name, setName] = useState('');
+  const [type, setType] = useState(null)
+
+  const addNewCategory = () => {
+    if (name === '') {
+      Alert.alert(
+        'Thêm danh mục mới thất bại',
+        'Bạn chưa nhập tên danh mục mới'
+      )
+      return;
+    }
+
+    if (type === null) {
+      Alert.alert(
+        'Thêm danh mục mới thất bại',
+        'Bạn chưa chọn nhóm'
+      )
+      return;
+    }
+
+    let find = categories.find(category => category.name === name)
+    if (find) {
+      if (find.name === name && find.type === type) {
+        Alert.alert(
+          'Thêm danh mục mới thất bại',
+          'Danh mục này đã tồn tại'
+        )
+        return;
+      }
+    }
+
+    addToCategories({
+      name: name,
+      type: type
+    })
+  }
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -41,7 +85,7 @@ const AddCategory = ({ navigation }) => {
         <View style={styles.navigationBar}>
           <TouchableOpacity
             style={styles.return}
-            onPress={() => navigation.navigate('AddTransaction')}
+            onPress={() => navigation.goBack()}
           >
             <Image
               source={cancel_icon}
@@ -60,7 +104,7 @@ const AddCategory = ({ navigation }) => {
               ...styles.textInput,
               height: 50
             }}
-            onChangeText={(description) => { setDescription(description) }}
+            onChangeText={(name) => { setName(name) }}
             underlineColorAndroid="transparent"
             placeholder="Tên phân loại"
             placeholderTextColor={COLORS.darkgray}
@@ -88,6 +132,7 @@ const AddCategory = ({ navigation }) => {
               if (isIncomePressed === true) {
                 setIncomePressed(!isIncomePressed);
               }
+              setType('expense')
             }}
           >
             <View style={{ flexDirection: 'row' }}>
@@ -116,6 +161,7 @@ const AddCategory = ({ navigation }) => {
               if (isExpensePressed === true) {
                 setExpensePressed(!isExpensePressed);
               }
+              setType('income')
             }}
           >
             <View style={{ flexDirection: 'row' }}>
@@ -132,7 +178,7 @@ const AddCategory = ({ navigation }) => {
         </View>
         <TouchableOpacity
           style={styles.addButton}
-        // onPress={}
+          onPress={addNewCategory}
         >
           <Text style={styles.addButtonText}>Thêm</Text>
         </TouchableOpacity>
