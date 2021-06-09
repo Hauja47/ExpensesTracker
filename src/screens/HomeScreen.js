@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import 'react-native-gesture-handler';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,14 +10,12 @@ import {
   Image,
   Animated
 } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import NumberFormat from 'react-number-format';
 import MonthPicker from 'react-native-month-year-picker'
 
 import { COLORS, FONTS, SIZES } from '../constants/theme';
 import { down_arrow, up_arrow, drop_down_arrow } from '../constants/icons';
-
-import { getCategories, getTransactions } from '../redux/actions/';
 
 const transactionType = [
   {
@@ -37,18 +36,12 @@ const transactionType = [
 
 const HomeScreen = ({ navigation }) => {
 
-  useEffect(() => {
-    dispatch(getTransactions());
-    dispatch(getCategories());
-  }, [transactions, categories]);
-
   const [selectedTransactionType, setSelectedTransactionType] = useState('all');
   const [showMYP, setshowMYP] = useState(false);
   const [date, setDate] = useState(new Date())
 
   const { categories } = useSelector(state => state.categoriesReducer);
   const { transactions } = useSelector(state => state.transactionsReducer);
-  const dispatch = useDispatch();
 
   const categoryListHeightAnimationValue = useRef(new Animated.Value(0)).current;
 
@@ -108,24 +101,26 @@ const HomeScreen = ({ navigation }) => {
           backgroundColor: (selectedTransactionType && selectedTransactionType == item.type) ? item.color : 'gold'
         }}
         onPress={() => {
-          if (selectedTransactionType == 'all') {
-            setSelectedTransactionType(item.type)
-            Animated.timing(categoryListHeightAnimationValue, {
-              toValue: 55,
-              duration: 500,
-              useNativeDriver: false,
-            }).start()
-            console.log(selectedTransactionType)
-          } else if (selectedTransactionType == item.type) {
-            setSelectedTransactionType('all')
-            Animated.timing(categoryListHeightAnimationValue, {
-              toValue: 0,
-              duration: 500,
-              useNativeDriver: false,
-            }).start()
-            console.log(selectedTransactionType)
-          } else {
-            setSelectedTransactionType(item.type)
+          switch (selectedTransactionType) {
+            case 'all':
+              setSelectedTransactionType(item.type)
+              Animated.timing(categoryListHeightAnimationValue, {
+                toValue: 55,
+                duration: 500,
+                useNativeDriver: false,
+              }).start()
+              break;
+            case item.type:
+              setSelectedTransactionType('all')
+              Animated.timing(categoryListHeightAnimationValue, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: false,
+              }).start()
+              break;
+            default:
+              setSelectedTransactionType(item.type)
+              break;
           }
         }}
       >
@@ -226,14 +221,21 @@ const HomeScreen = ({ navigation }) => {
       return sum;
     }
 
+    const handleTransactionInfoPress = () => {
+
+    }
+
     const renderTransactionInfoItemData = ({ item }) => {
       return (
         <View style={{
           padding: 10,
         }}>
-          <TouchableOpacity style={{
-            flexDirection: 'row'
-          }}>
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row'
+            }}
+            onPress={handleTransactionInfoPress}
+          >
             <View style={{ flex: 1 }}>
               <Text style={{ ...FONTS.h3, color: COLORS.black }}>{item.name}</Text>
               <Text style={{ ...FONTS.body3, color: COLORS.darkgray }} ellipsizeMode='clip' numberOfLines={1}>{item.description}</Text>
@@ -402,7 +404,7 @@ const HomeScreen = ({ navigation }) => {
         }}
         onPress={() => navigation.navigate('AddTransaction')}
       />
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
