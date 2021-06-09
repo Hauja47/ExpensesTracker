@@ -1,7 +1,8 @@
 import { ADD_CATEGORIES, GET_CATEGORIES } from '../actions/actions';
 
 const initialState = {
-    categories: []
+    categories: [],
+    isCategoriesLoaded: false
 }
 
 function categoriesReducer(state = initialState, action) {
@@ -15,6 +16,7 @@ function categoriesReducer(state = initialState, action) {
             return {
                 ...state,
                 categories: action.payload,
+                isCategoriesLoaded: true
             };
         default:
             return state;
