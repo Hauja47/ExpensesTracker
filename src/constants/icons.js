@@ -6,6 +6,8 @@ export const calendar = require('../assets/icons/calendar.png')
 export const wallet = require('../assets/icons/wallet.png')
 export const paragrapgh = require('../assets/icons/edit.png')
 export const category = require('../assets/icons/menu.png')
+export const edit = require('../assets/icons/edit.png')
+export const delete_icon = require('../assets/icons/delete.png')
 
 export default {
     down_arrow,
@@ -15,5 +17,7 @@ export default {
     calendar,
     wallet,
     paragrapgh,
-    category
+    category,
+    edit,
+    delete_icon
 }
