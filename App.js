@@ -3,8 +3,9 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack'
-import { useSelector, useDispatch } from 'react-redux';
 import { Provider } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCategories, getTransactions } from './src/redux/actions'
 
 import { store } from './src/redux/store';
 import {
@@ -14,11 +15,11 @@ import {
   AddCategory,
   SplashScreen
 } from './src/screens/';
-import { getCategories, getTransactions } from './src/redux/actions'
 
 const Stack = createStackNavigator();
+const AppStack = createStackNavigator();
 
-const AppWapper = () => {
+const AppWrapper = () => {
   return (
     <Provider store={store}>
       <App />
@@ -28,40 +29,47 @@ const AppWapper = () => {
 
 const App = () => {
 
-  // const dispatch = useDispatch();
-  // const { isTransactionsLoaded } = useSelector(state => state.transactionsReducer)
-  // const { isCategoriesLoaded } = useSelector(state => state.categoriesReducer)
+  const dispatch = useDispatch();
+  const { isCategoriesLoaded } = useSelector(state => state.categoriesReducer)
+  const { isTransactionsLoaded } = useSelector(state => state.transactionsReducer)
 
-  // React.useEffect(() => {
-  //   dispatch(getTransactions());
-  //   dispatch(getCategories());
-  // });
+  React.useEffect(() => {
+    dispatch(getCategories());
+    dispatch(getTransactions());
+  }, [])
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName='SplashScreen'
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen
-          name="SplashScreen"
-          component={SplashScreen}
-        />
-        <Stack.Screen
-          name="HomeScreen"
-          component={HomeScreen}
-        />
-        <Stack.Screen
-          name="AddTransaction"
-          component={AddTransaction}
-        />
-        <Stack.Screen
-          name="AddCategory"
-          component={AddCategory}
-        />
-      </Stack.Navigator>
+      {(!(isCategoriesLoaded && isTransactionsLoaded)) ? (
+        <Stack.Navigator
+          initialRouteName='SplashScreen'
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
+          />
+        </Stack.Navigator>
+      ) : (
+        <AppStack.Navigator
+          screenOptions={{ headerShown: false }}
+        >
+          <AppStack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+          />
+          <AppStack.Screen
+            name="AddTransaction"
+            component={AddTransaction}
+          />
+          <AppStack.Screen
+            name="AddCategory"
+            component={AddCategory}
+          />
+        </AppStack.Navigator>
+      )}
     </NavigationContainer>
-  );
-};
+  )
+}
 
-export default AppWapper;
+export default AppWrapper;
