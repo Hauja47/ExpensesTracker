@@ -52,11 +52,16 @@ const App = () => {
         </Stack.Navigator>
       ) : (
         <AppStack.Navigator
+          initialRouteName='HomeScreen'
           screenOptions={{ headerShown: false }}
         >
           <AppStack.Screen
             name="HomeScreen"
             component={HomeScreen}
+          />
+          <AppStack.Screen
+            name="TransactionDetail"
+            component={TransactionDetail}
           />
           <AppStack.Screen
             name="AddTransaction"
