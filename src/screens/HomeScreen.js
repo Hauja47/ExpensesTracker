@@ -60,14 +60,7 @@ const HomeScreen = ({ navigation }) => {
     return (
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity
-          style={{
-            flexDirection: 'row',
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-            marginLeft: 10,
-            borderRadius: 25,
-            backgroundColor: COLORS.blue
-          }}
+          style={styles.monthYearButton}
           onPress={() => setshowMYP(true)}
         >
           <Text style={{ ...FONTS.h3, color: COLORS.white }}>Tháng {date.getMonth() + 1} năm {date.getFullYear()}</Text>
@@ -221,24 +214,32 @@ const HomeScreen = ({ navigation }) => {
       return sum;
     }
 
-    const handleTransactionInfoPress = () => {
-
+    const handleTransactionInfoPress = (item) => {
+      navigation.navigate('TransactionDetail', {
+        id: item.id,
+        category: item.name,
+        amount: item.amount,
+        description: item.description,
+        date: item.date
+      })
     }
 
     const renderTransactionInfoItemData = ({ item }) => {
       return (
-        <View style={{
-          padding: 10,
-        }}>
+        <View style={{ padding: 10 }}>
           <TouchableOpacity
-            style={{
-              flexDirection: 'row'
-            }}
-            onPress={handleTransactionInfoPress}
+            style={{ flexDirection: 'row' }}
+            onPress={() => handleTransactionInfoPress(item)}
           >
             <View style={{ flex: 1 }}>
               <Text style={{ ...FONTS.h3, color: COLORS.black }}>{item.name}</Text>
-              <Text style={{ ...FONTS.body3, color: COLORS.darkgray }} ellipsizeMode='clip' numberOfLines={1}>{item.description}</Text>
+              <Text
+                style={{ ...FONTS.body3, color: COLORS.darkgray }}
+                ellipsizeMode='clip'
+                numberOfLines={1}
+              >
+                {item.description}
+              </Text>
             </View>
             <View style={{
               flexWrap: 'wrap',
@@ -253,7 +254,7 @@ const HomeScreen = ({ navigation }) => {
                   <Text
                     style={{
                       ...FONTS.h3,
-                      color: (item.type == 'expense') ? COLORS.red : COLORS.darkgreen,
+                      color: (item.type === 'expense') ? COLORS.red : COLORS.darkgreen,
                     }}
                     numberOfLines={1}>{formattedValue}</Text>
                 }
@@ -266,50 +267,25 @@ const HomeScreen = ({ navigation }) => {
 
     const renderTransactionInfoItem = ({ item }) => {
       return (
-        <View
-          style={{ flex: 1, borderRadius: 15, backgroundColor: 'white', elevation: 7 }}
-        >
+        <View style={{ flex: 1, borderRadius: 15, backgroundColor: 'white', elevation: 7 }}>
           <View style={{
             flex: 1,
             flexDirection: 'row',
           }}>
-            <View style={{
-              paddingHorizontal: 15,
-              paddingVertical: 5,
-              alignItems: 'center',
-              borderRightWidth: 0.5,
-              borderColor: '#c8c7cc',
-            }}>
+            <View style={styles.transactionDayContainer}>
               <Text style={{ ...FONTS.h4, color: COLORS.darkgray }}>Ngày</Text>
               <Text style={{ fontSize: 35, color: COLORS.blue }}>{(item.date).split('-')[2]}</Text>
             </View>
-            <View style={{
-              flex: 1,
-              justifyContent: 'center',
-            }}>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
               <FlatList
                 data={item.data}
                 keyExtractor={item => item.id}
                 renderItem={renderTransactionInfoItemData}
-                ItemSeparatorComponent={() => (
-                  <View style={{
-                    padding: 0.5,
-                    marginTop: 2,
-                    backgroundColor: '#c8c7cc',
-                    marginVertical: 2,
-                  }} />
-                )}
+                ItemSeparatorComponent={() => (<View style={styles.transactionListSeperator} />)}
               />
             </View>
           </View>
-          <View style={{
-            flex: 1,
-            flexDirection: 'row-reverse',
-            paddingHorizontal: 2,
-            paddingVertical: 7,
-            borderTopWidth: 0.5,
-            borderColor: '#c8c7cc',
-          }}>
+          <View style={styles.detailDayContainer}>
             <View style={{ paddingHorizontal: 10, flexDirection: 'row' }}>
               <Text style={{ ...FONTS.body4, color: COLORS.darkgray }}>Thu nhập: </Text>
               <NumberFormat
@@ -319,11 +295,10 @@ const HomeScreen = ({ navigation }) => {
                 suffix='đ'
                 renderText={formattedValue =>
                   <Text
-                    style={{
-                      color: COLORS.darkgreen,
-                      ...FONTS.h4
-                    }}
-                    numberOfLines={1}>{formattedValue}</Text>
+                    style={{ color: COLORS.darkgreen, ...FONTS.h4 }}
+                    numberOfLines={1}>
+                    {formattedValue}
+                  </Text>
                 }
               />
             </View>
@@ -336,11 +311,11 @@ const HomeScreen = ({ navigation }) => {
                 suffix='đ'
                 renderText={formattedValue =>
                   <Text
-                    style={{
-                      color: COLORS.red,
-                      ...FONTS.h4
-                    }}
-                    numberOfLines={1}>{formattedValue}</Text>
+                    style={{ color: COLORS.red, ...FONTS.h4 }}
+                    numberOfLines={1}
+                  >
+                    {formattedValue}
+                  </Text>
                 }
               />
             </View>
@@ -356,7 +331,7 @@ const HomeScreen = ({ navigation }) => {
             padding: 10,
           }}
           showsVerticalScrollIndicator={false}
-          data={transactions.sort()}
+          data={transactions.sort((a, b) => a.date > b.date && 1 || -1)}
           keyExtractor={item => item.date}
           renderItem={renderTransactionInfoItem}
           ItemSeparatorComponent={() => (<View style={{ padding: 5 }} />)}
@@ -393,15 +368,7 @@ const HomeScreen = ({ navigation }) => {
       {renderTransactionInfo()}
 
       <TouchableOpacity
-        style={{
-          width: 60,
-          height: 60,
-          borderRadius: 30,
-          position: 'absolute',
-          backgroundColor: COLORS.blue,
-          bottom: 20,
-          right: 20
-        }}
+        style={styles.addTransactionButton}
         onPress={() => navigation.navigate('AddTransaction')}
       />
     </SafeAreaView>
@@ -424,6 +391,44 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginTop: 27
   },
+  addTransactionButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    position: 'absolute',
+    backgroundColor: COLORS.blue,
+    bottom: 20,
+    right: 20
+  },
+  detailDayContainer: {
+    flex: 1,
+    flexDirection: 'row-reverse',
+    paddingHorizontal: 2,
+    paddingVertical: 7,
+    borderTopWidth: 0.5,
+    borderColor: '#c8c7cc',
+  },
+  transactionListSeperator: {
+    padding: 0.5,
+    marginTop: 2,
+    backgroundColor: '#c8c7cc',
+    marginVertical: 2,
+  },
+  transactionDayContainer: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    alignItems: 'center',
+    borderRightWidth: 0.5,
+    borderColor: '#c8c7cc',
+  },
+  monthYearButton: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginLeft: 10,
+    borderRadius: 25,
+    backgroundColor: COLORS.blue
+  }
 })
 
 export default HomeScreen;
