@@ -33,15 +33,15 @@ const createTRANSACTIONS = () => {
           txn.executeSql(
             'INSERT INTO TRANSACTIONS(category_id, amount, description, date) VALUES(?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?);',
             [
-              1, -5182000, 'Học phí', '2021-05-21',
-              3, -160000, 'Mua thuốc nhỏ mắt', '2021-08-19',
-              2, -50000, 'Trà sữa', '2021-08-19',
+              1, 5182000, 'Học phí', '2021-05-21',
+              3, 160000, 'Mua thuốc nhỏ mắt', '2021-08-19',
+              2, 50000, 'Trà sữa', '2021-08-19',
               9, 500000, 'Thưởng', '2021-10-15',
               10, 300000, 'Lãi', '2021-10-16',
               9, 10000, 'Thưởng gì đó', '2021-10-25',
               8, 1200000, 'Lương tháng', '2021-10-15',
-              4, -22000, 'Tiền cơm', '2021-10-16',
-              6, -50000, 'Về nhà', '2021-08-19',
+              4, 22000, 'Tiền cơm', '2021-10-16',
+              6, 50000, 'Về nhà', '2021-08-19',
               10, 200000, 'Lãi gì đó', '2021-10-25'
             ]
           );
@@ -108,7 +108,7 @@ export const addTransaction = (transaction, navigation) => {
         (tx, res) => {
           if (res.rowsAffected === 1) {
             txn.executeSql(
-              'SELECT * FROM TRANSACTIONS WHERE category_id=? and amount=? and description=? and date=?;',
+              'SELECT TRANSACTIONS.id, name, description, date, type, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id WHERE category_id=? and amount=? and description=? and date=?;',
               [
                 transaction.category_id,
                 transaction.amount,
