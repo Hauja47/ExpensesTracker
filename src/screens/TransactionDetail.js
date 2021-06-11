@@ -7,19 +7,41 @@ import {
     TouchableOpacity,
     Image,
     Text,
-    ScrollView
+    ScrollView,
+    Alert
 } from 'react-native'
+import NumberFormat from 'react-number-format';
+import { useDispatch } from 'react-redux'
+
 import { COLORS, SIZES, FONTS } from '../constants/theme';
 import { cancel_icon, edit, delete_icon } from '../constants/icons';
-import NumberFormat from 'react-number-format';
+import { deleteTransaction } from '../redux/actions/transactionsAction';
 
 const { DateTime } = require('luxon');
-
 
 const TransactionDetail = ({ route, navigation }) => {
 
     const data = route.params;
     const date = DateTime.fromFormat(data.date, 'yyyy-MM-dd').setLocale('vi');
+
+    const dispatch = useDispatch();
+
+    const handleDelete = () => {
+
+        Alert.alert(
+            'Cảnh báo',
+            'Bạn sẽ không thể hoàn tác một khi tiếp tục!\nXác định?',
+            [
+                { text: 'Hủy'},
+                { text: 'Xác định', onPress: () => dispatch(deleteTransaction(data.id, data.date, navigation))}
+            ],
+            { cancelable: false }
+        )
+    }
+
+    const handleEdit = () => {
+
+    }
 
     return (
         <SafeAreaView style={styles.background}>
@@ -43,6 +65,7 @@ const TransactionDetail = ({ route, navigation }) => {
                 <View style={styles.navigationBar}>
                     <TouchableOpacity
                         style={styles.button}
+                        onPress={handleDelete}
                     >
                         <Image
                             source={delete_icon}
@@ -51,6 +74,7 @@ const TransactionDetail = ({ route, navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.button}
+                        onPress={handleEdit}
                     >
                         <Image
                             source={edit}

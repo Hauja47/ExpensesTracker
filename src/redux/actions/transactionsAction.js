@@ -1,5 +1,10 @@
 import 'react-native-gesture-handler';
-import { ADD_TRANSACTIONS, GET_TRANSACTIONS } from './actions';
+import {
+  ADD_TRANSACTION,
+  GET_TRANSACTIONS,
+  DELETE_TRANSACTION,
+  UPDATE_TRANSACTION
+} from './actions';
 import {
   Alert
 } from 'react-native';
@@ -51,6 +56,10 @@ const createTRANSACTIONS = () => {
   })
 }
 
+const goPreviousScreen = (navigation) => {
+  navigation.goBack()
+}
+
 export const getTransactions = () => {
 
   createTRANSACTIONS();
@@ -61,11 +70,7 @@ export const getTransactions = () => {
         "SELECT TRANSACTIONS.id, name, description, date, type, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id;",
         [],
         function (tx, res) {
-          let result = []
-          for (let i = 0; i < res.rows.length; i++) {
-            result.push(res.rows.item(i))
-            // console.log(res.rows.item(i))
-          }
+          let result = res.rows.raw()
 
           let transacItem = result.reduce((re, o) => {
             let existObj = re.find(
@@ -117,19 +122,18 @@ export const addTransaction = (transaction, navigation) => {
               ],
               (tx, res) => {
                 let temp = res.rows.item(0);
-                console.log('temp:', temp)
 
                 Alert.alert(
                   'Thành công',
                   'Thêm giao dịch mới thành công',
                   [
-                    { text: 'OK', onPress: () => { navigation.goBack() } },
+                    { text: 'OK', onPress: () => goPreviousScreen(navigation) },
                   ],
                   { cancelable: false }
                 )
 
                 dispatch({
-                  type: ADD_TRANSACTIONS,
+                  type: ADD_TRANSACTION,
                   payload: temp
                 })
               }
@@ -141,8 +145,45 @@ export const addTransaction = (transaction, navigation) => {
             )
           }
         },
-        (err) => console.err(err.message)
+        (err) => console.error(err.message)
       );
     }, (err) => { console.log(err.message) });
+  }
+}
+
+export const deleteTransaction = (dataId, dataDate, navigation) => {
+  return dispatch => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'DELETE FROM TRANSACTIONS WHERE id=?',
+        [dataId],
+        (txn, result) => {
+          if (result.rowsAffected === 1) {
+            Alert.alert(
+              'Thành công',
+              'Xóa giao dịch thành công',
+              [
+                { text: 'OK', onPress: () => goPreviousScreen(navigation) },
+              ],
+              { cancelable: false }
+            )
+
+            dispatch({
+              type: DELETE_TRANSACTION,
+              payload: {
+                id: dataId,
+                date: dataDate
+              }
+            })
+          } else {
+            Alert.alert(
+              'Thất bại',
+              'Đã có vấn đề xảy ra. Xin hãy thử lại!',
+            )
+          }
+        },
+        (err) => console.error(err.message)
+      )
+    }, (err) => { console.error(err.message) })
   }
 }
