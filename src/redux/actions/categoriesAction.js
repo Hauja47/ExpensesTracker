@@ -57,10 +57,7 @@ export const getCategories = () => {
         "SELECT * FROM CATEGORY",
         [],
         function (tx, res) {
-          let temp = []
-          for (let i = 0; i < res.rows.length; i++) {
-            temp.push(res.rows.item(i))
-          }
+          let temp = res.rows.raw()
 
           dispatch({
             type: GET_CATEGORIES,
