@@ -331,7 +331,7 @@ const HomeScreen = ({ navigation }) => {
             padding: 10,
           }}
           showsVerticalScrollIndicator={false}
-          data={transactions.sort((a, b) => a.date > b.date && 1 || -1)}
+          data={transactions}
           keyExtractor={item => item.date}
           renderItem={renderTransactionInfoItem}
           ItemSeparatorComponent={() => (<View style={{ padding: 5 }} />)}
