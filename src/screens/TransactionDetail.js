@@ -14,7 +14,15 @@ import NumberFormat from 'react-number-format';
 import { useDispatch } from 'react-redux'
 
 import { COLORS, SIZES, FONTS } from '../constants/theme';
-import { cancel_icon, edit, delete_icon } from '../constants/icons';
+import {
+    back,
+    edit,
+    delete_icon,
+    category,
+    calendar,
+    wallet,
+    paragrapgh
+} from '../constants/icons';
 import { deleteTransaction } from '../redux/actions/transactionsAction';
 
 const { DateTime } = require('luxon');
@@ -32,8 +40,8 @@ const TransactionDetail = ({ route, navigation }) => {
             'Cảnh báo',
             'Bạn sẽ không thể hoàn tác một khi tiếp tục!\nXác định?',
             [
-                { text: 'Hủy'},
-                { text: 'Xác định', onPress: () => dispatch(deleteTransaction(data.id, data.date, navigation))}
+                { text: 'Hủy' },
+                { text: 'Xác định', onPress: () => dispatch(deleteTransaction(data.id, data.date, navigation)) }
             ],
             { cancelable: false }
         )
@@ -45,31 +53,38 @@ const TransactionDetail = ({ route, navigation }) => {
 
     return (
         <SafeAreaView style={styles.background}>
-            <View style={styles.navigationBar}>
-                <TouchableOpacity
-                    style={styles.return}
-                    onPress={() => navigation.goBack()}
-                >
-                    <Image
-                        source={cancel_icon}
-                        style={styles.returnIcon}
-                    />
-                </TouchableOpacity>
-                <Text
-                    style={styles.header}
-                    ellipsizeMode='clip'
-                    numberOfLines={1}
-                >
-                    Thông tin Giao dịch
-                </Text>
+            <View style={[
+                styles.navigationBar,
+                { justifyContent: 'space-between' }
+            ]}>
                 <View style={styles.navigationBar}>
+                    <TouchableOpacity
+                        style={styles.return}
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Image
+                            source={back}
+                            style={[styles.icon, {tintColor: COLORS.white}]}
+                        />
+                    </TouchableOpacity>
+                    <Text
+                        style={styles.header}
+                        ellipsizeMode='clip'
+                        numberOfLines={1}
+                    >
+                        Thông tin Giao dịch
+                    </Text>
+                </View>
+                <View
+                    style={styles.navigationBar}
+                >
                     <TouchableOpacity
                         style={styles.button}
                         onPress={handleDelete}
                     >
                         <Image
                             source={delete_icon}
-                            style={styles.icon}
+                            style={[styles.icon, {tintColor: COLORS.white}]}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -78,7 +93,7 @@ const TransactionDetail = ({ route, navigation }) => {
                     >
                         <Image
                             source={edit}
-                            style={styles.icon}
+                            style={[styles.icon, {tintColor: COLORS.white}]}
                         />
                     </TouchableOpacity>
                 </View>
@@ -86,49 +101,64 @@ const TransactionDetail = ({ route, navigation }) => {
 
             <View style={styles.detailContainer}>
                 <View style={styles.elementContainer}>
-                    <Text style={styles.elementText}>Thời gian:</Text>
-                    <Text style={styles.detailText}>{date.toFormat('DDDD')}</Text>
+                    <Image source={calendar} style={styles.icon} />
+                    <View style={{ margin: 5 }}>
+                        <Text style={styles.elementText}>Thời gian:</Text>
+                        <Text style={styles.detailText}>{date.toFormat('DDDD')}</Text>
+                    </View>
                 </View>
+
                 <View style={styles.elementContainer}>
-                    <Text style={styles.elementText}>Số tiền:</Text>
-                    <NumberFormat
-                        value={data.amount}
-                        displayType={'text'}
-                        thousandSeparator={true}
-                        suffix='đ'
-                        renderText={formattedValue =>
-                            <Text style={
-                                [
-                                    styles.detailText,
-                                    {
-                                        color: (data.type === 'expense') ?
-                                            COLORS.red :
-                                            COLORS.green
-                                    }
-                                ]
+                    <Image source={wallet} style={styles.icon} />
+                    <View style={{ margin: 5 }}>
+                        <Text style={styles.elementText}>Số tiền:</Text>
+                        <NumberFormat
+                            value={data.amount}
+                            displayType={'text'}
+                            thousandSeparator={true}
+                            suffix='đ'
+                            renderText={formattedValue =>
+                                <Text style={
+                                    [
+                                        styles.detailText,
+                                        {
+                                            color: (data.type === 'expense') ?
+                                                COLORS.red :
+                                                COLORS.green
+                                        }
+                                    ]
+                                }
+                                >
+                                    {formattedValue}
+                                </Text>
                             }
-                            >
-                                {formattedValue}
-                            </Text>
-                        }
-                    />
+                        />
+                    </View>
                 </View>
+
                 <View style={styles.elementContainer}>
-                    <Text style={styles.elementText}>Danh mục:</Text>
-                    <Text style={[
-                        styles.detailText,
-                        {
-                            color: (data.type === 'expense') ?
-                                COLORS.red :
-                                COLORS.green
-                        }
-                    ]}>{data.category}</Text>
+                    <Image source={category} style={styles.icon} />
+                    <View style={{ margin: 5 }}>
+                        <Text style={styles.elementText}>Danh mục:</Text>
+                        <Text style={[
+                            styles.detailText,
+                            {
+                                color: (data.type === 'expense') ?
+                                    COLORS.red :
+                                    COLORS.green
+                            }
+                        ]}>{data.category}</Text>
+                    </View>
                 </View>
+
                 <View style={styles.elementContainer}>
-                    <Text style={styles.elementText}>Ghi chú:</Text>
-                    <ScrollView>
-                        <Text style={styles.detailText}>{data.description}</Text>
-                    </ScrollView>
+                    <Image source={paragrapgh} style={styles.icon} />
+                    <View style={{ margin: 5 }}>
+                        <Text style={styles.elementText}>Ghi chú:</Text>
+                        <ScrollView>
+                            <Text style={styles.detailText}>{data.description}</Text>
+                        </ScrollView>
+                    </View>
                 </View>
             </View>
         </SafeAreaView >
@@ -143,7 +173,7 @@ const styles = StyleSheet.create({
     return: {
         justifyContent: 'center',
         width: 50,
-        left: 20,
+        left: 7,
         alignSelf: 'flex-start',
         paddingVertical: 24
     },
@@ -153,13 +183,14 @@ const styles = StyleSheet.create({
     },
     navigationBar: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        backgroundColor: COLORS.blue
     },
     header: {
-        margin: 20,
+        marginTop: 22,
+        marginHorizontal: 7,
         fontSize: 20,
-        color: COLORS.black,
-        alignSelf: 'flex-start'
+        color: COLORS.white,
+        alignSelf: 'flex-start',
     },
     button: {
         justifyContent: 'center',
@@ -168,18 +199,20 @@ const styles = StyleSheet.create({
     icon: {
         height: 25,
         width: 25,
-        marginLeft: 10
+        marginHorizontal: 10,
+        alignSelf: 'center',
+        justifyContent: 'center',
     },
     detailContainer: {
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        margin: 10
+        margin: 20
     },
     elementContainer: {
         width: SIZES.width,
-        justifyContent: 'space-between',
-        padding: 10
+        padding: 10,
+        flexDirection: 'row'
     },
     elementText: {
         ...FONTS.body3,
