@@ -8,6 +8,7 @@ export const paragrapgh = require('../assets/icons/edit.png')
 export const category = require('../assets/icons/menu.png')
 export const edit = require('../assets/icons/edit.png')
 export const delete_icon = require('../assets/icons/delete.png')
+export const back = require('../assets/icons/left-arrow.png')
 
 export default {
     down_arrow,
@@ -19,5 +20,6 @@ export default {
     paragrapgh,
     category,
     edit,
-    delete_icon
+    delete_icon,
+    back
 }
