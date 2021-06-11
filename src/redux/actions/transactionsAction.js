@@ -12,6 +12,7 @@ import {
 import { openDatabase } from 'react-native-sqlite-storage';
 
 const db = openDatabase({ name: 'fiance.db' });
+const { DateTime } = require('luxon')
 
 const createTRANSACTIONS = () => {
   db.transaction((txn) => {
@@ -60,6 +61,24 @@ const goPreviousScreen = (navigation) => {
   navigation.goBack()
 }
 
+const convertData = (data) => (
+  data.reduce((re, o) => {
+    let existObj = re.find(
+      obj => obj.date == o.date
+    )
+
+    if (existObj) {
+      existObj.data.push(o)
+    } else {
+      re.push({
+        date: o.date,
+        data: [o]
+      })
+    }
+    return re
+  }, [])
+)
+
 export const getTransactions = () => {
 
   createTRANSACTIONS();
@@ -70,23 +89,11 @@ export const getTransactions = () => {
         "SELECT TRANSACTIONS.id, name, description, date, type, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id;",
         [],
         function (tx, res) {
-          let result = res.rows.raw()
+          let transacItem = convertData(res.rows.raw())
 
-          let transacItem = result.reduce((re, o) => {
-            let existObj = re.find(
-              obj => obj.date == o.date
-            )
-
-            if (existObj) {
-              existObj.data.push(o)
-            } else {
-              re.push({
-                date: o.date,
-                data: [o]
-              })
-            }
-            return re
-          }, [])
+          transacItem.sort((a, b) =>
+            DateTime.fromFormat('yyyy-MM-dd', a.date).toMillis() <
+            DateTime.fromFormat('yyyy-MM-dd', b.date).toMillis() && 1 || -1)
 
           dispatch({
             type: GET_TRANSACTIONS,
@@ -185,5 +192,51 @@ export const deleteTransaction = (dataId, dataDate, navigation) => {
         (err) => console.error(err.message)
       )
     }, (err) => { console.error(err.message) })
+  }
+}
+
+export const updateTransaction = (dataID, oldDate, newData) => {
+  return dispatch => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'UPDATE TRANSACTIONS SET category_id=?, description=?, date=?, amount=? WHERE id=?',
+        [
+          newData.category_id, 
+          newData.description,
+          newData.date,
+          newData.amount,
+          dataID
+        ],
+        (txn, result) => {
+          if (result.rowsAffected === 1) {
+            Alert.alert(
+              'Thành công',
+              'Chỉnh sửa giao dịch thành công',
+              [
+                { text: 'OK', onPress: () => goPreviousScreen(navigation) },
+              ],
+              { cancelable: false }
+            )
+
+            dispatch({
+              type: UPDATE_TRANSACTION,
+              payload: {
+                id: dataID,
+                category_id: newData.description,
+                date: newData.date,
+                amount: newData.amount,
+                description: newData.description,
+                old_date: oldDate
+              }
+            })
+          } else {
+            Alert.alert(
+              'Thất bại',
+              'Đã có vấn đề xảy ra. Xin hãy thử lại!',
+            )
+          }
+        }
+      )
+    })
   }
 }
