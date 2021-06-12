@@ -195,17 +195,17 @@ export const deleteTransaction = (dataId, dataDate, navigation) => {
   }
 }
 
-export const updateTransaction = (dataID, oldDate, newData) => {
+export const updateTransaction = (data, oldDate, navigation) => {
   return dispatch => {
     db.transaction(tx => {
       tx.executeSql(
         'UPDATE TRANSACTIONS SET category_id=?, description=?, date=?, amount=? WHERE id=?',
         [
-          newData.category_id, 
-          newData.description,
-          newData.date,
-          newData.amount,
-          dataID
+          data.category_id, 
+          data.description,
+          data.date,
+          data.amount,
+          data.id
         ],
         (txn, result) => {
           if (result.rowsAffected === 1) {
@@ -221,11 +221,7 @@ export const updateTransaction = (dataID, oldDate, newData) => {
             dispatch({
               type: UPDATE_TRANSACTION,
               payload: {
-                id: dataID,
-                category_id: newData.description,
-                date: newData.date,
-                amount: newData.amount,
-                description: newData.description,
+                ...data,
                 old_date: oldDate
               }
             })
