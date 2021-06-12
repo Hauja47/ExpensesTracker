@@ -34,15 +34,32 @@ function deleteData(array, data) {
 
     array.sort((a, b) =>
         DateTime.fromFormat('yyyy-MM-dd', a.date).toMillis() <
-        DateTime.fromFormat('yyyy-MM-dd', b.date).toMillis() && 1 || -1)
+        DateTime.fromFormat('yyyy-MM-dd', b.date).toMillis() && 1 || -1
+    )
 
     return array;
 }
 
-function updateData(array, data) {
+function updateData(array, data, oldDate) {
     // data.find(item => item.id === 2).data = data.find(item => item.id === 2).data.map(item => {
     //     return (item.id === 5) ? { id: 5, data: 2 } : item
     // })
+
+    if (oldDate === data.date) {
+        array.find(item => item.date = oldDate).data = array.find(item => item.date = oldDate).data.map(item => {
+            return (item.id === data.id) ? {
+                id: data.id,
+                name: data.name,
+                date: data.date,
+                amount: data.amount,
+                description: data.description,
+                type: data.type,
+            } : item
+        })
+    } else {    
+        array = deleteData(array, data)
+        array = addData(array, data)
+    }
 }
 
 function categoriesReducer(state = initialState, action) {
@@ -66,7 +83,7 @@ function categoriesReducer(state = initialState, action) {
         case UPDATE_TRANSACTION:
             return {
                 ...state,
-                transactions
+                transactions: updateData(state.transactions, action.payload, action.payload.old_date)
             };
         default:
             return state;
