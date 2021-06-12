@@ -19,7 +19,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useIsFocused } from '@react-navigation/native';
 
-import { addTransaction } from '../redux/actions/transactionsAction';
+import { addTransaction, updateTransaction } from '../redux/actions/transactionsAction';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
 import { cancel_icon, drop_down_arrow, paragrapgh, wallet, calendar } from '../constants/icons';
 
@@ -27,14 +27,16 @@ const Tab = createMaterialTopTabNavigator();
 const actionSheetRef = createRef();
 const { DateTime } = require("luxon");
 
-const AddTransaction = ({ navigation }) => {
+const AddTransaction = ({ route, navigation }) => {
+
+  const importData = route.params;
 
   const dispatch = useDispatch();
 
   const { categories } = useSelector(state => state.categoriesReducer);
 
   const isFocus = useIsFocused();
-  
+
   const [date, setDate] = useState(new Date());
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -44,21 +46,16 @@ const AddTransaction = ({ navigation }) => {
   const [showDTPicker, setDTPickerVisible] = useState(false);
 
   useEffect(() => {
-    GetCategoriesByType('expense');
-    GetCategoriesByType('income');
-  }, [isFocus])
-
-  const GetCategoriesByType = async (type) => {
-    let temp = categories.filter(category => category.type === type)
-    switch (type) {
-      case 'income':
-        setIncomeCategories(temp)
-        break;
-      case 'expense':
-        setExpenseCategories(temp)
-        break;
+    if (importData) {
+      setDate(new Date(importData.date))
+      setCategory({
+        name: importData.name,
+        type: importData.type
+      })
+      setDescription(importData.description)
+      setAmount(importData.amount)
     }
-  }
+  }, [])
 
   const handleCategoryButton = (category) => {
     setCategory(category);
@@ -107,11 +104,11 @@ const AddTransaction = ({ navigation }) => {
   }
 
   const Expense = () => (
-    <CategoriesByType data={expenseCategories} type='expense' />
+    <CategoriesByType data={categories.filter(category => category.type === 'expense')} type='expense' />
   )
 
   const Income = () => (
-    <CategoriesByType data={incomeCategories} type='income' />
+    <CategoriesByType data={categories.filter(category => category.type === 'income')} type='income' />
   )
 
   const onChange = (event, selectedDate) => {
@@ -121,31 +118,42 @@ const AddTransaction = ({ navigation }) => {
   };
 
   const addToTransaction = (data) => dispatch(addTransaction(data, navigation))
+  const updateToTransaction = (data) => dispatch(updateTransaction(data, importData.date, navigation))
 
   const checkNewTransaction = () => {
     if (amount === '') {
-      Alert.alert('Thêm giao dịch mới thất bại', 'Bạn cần nhập số tiền')
+      Alert.alert(
+        importData ? 'Chỉnh sửa giao dịch mới thất bại' : 'Thêm giao dịch mới thất bại',
+        'Bạn cần nhập số tiền'
+      )
       return;
     }
 
     if (description === '') {
-      Alert.alert('Thêm giao dịch mới thất bại', 'Bạn nên nhập ghi chú')
+      Alert.alert(
+        importData ? 'Chỉnh sửa giao dịch mới thất bại' : 'Thêm giao dịch mới thất bại',
+        'Bạn nên nhập ghi chú'
+      )
       return;
     }
 
     if (category === '') {
-      Alert.alert('Thêm giao dịch mới thất bại', 'Bạn nên chọn phân loại')
+      Alert.alert(
+        importData ? 'Chỉnh sửa giao dịch mới thất bại' : 'Thêm giao dịch mới thất bại',
+        'Bạn nên chọn phân loại'
+      )
       return;
     }
 
     let data = {
+      id: importData ? importData.id : null,
       category_id: category.id,
       amount: amount,
       description: description,
       date: DateTime.fromISO(date.toISOString()).toFormat('yyyy-MM-dd'),
     }
 
-    addToTransaction(data);
+    importData ? updateToTransaction(data) : addToTransaction(data);
   }
 
   return (
@@ -161,10 +169,27 @@ const AddTransaction = ({ navigation }) => {
               style={styles.cancelIcon}
             />
           </TouchableOpacity>
-          <Text style={styles.header}>Thêm Giao dịch</Text>
+          <Text style={styles.header}>{importData ? 'Chỉnh sửa Giao dịch' : 'Thêm Giao dịch'}</Text>
         </View>
 
         <View style={styles.amountInput}>
+          <TouchableOpacity
+            style={{
+              ...styles.categoryButton,
+              backgroundColor: (category == '') ? COLORS.gray : ((category.type === 'income') ? COLORS.green : COLORS.red),
+            }}
+            onPress={() => {
+              actionSheetRef.current?.setModalVisible();
+            }}
+          >
+            <KeyboardAvoidingView style={styles.innerButton}>
+              <Text style={styles.categoryButtonText}>{(category === '') ? 'Chọn phân loại' : category.name}</Text>
+              <Image
+                source={drop_down_arrow}
+                style={styles.dropDownIcon}
+              />
+            </KeyboardAvoidingView>
+          </TouchableOpacity>
           <Image
             source={wallet}
             style={styles.icon}
@@ -189,23 +214,6 @@ const AddTransaction = ({ navigation }) => {
             )}
           />
           <Text style={{ ...FONTS.h2, alignSelf: 'center', marginRight: 5 }}>đ</Text>
-          <TouchableOpacity
-            style={{
-              ...styles.categoryButton,
-              backgroundColor: (category == '') ? COLORS.gray : ((category.type === 'income') ? COLORS.green : COLORS.red),
-            }}
-            onPress={() => {
-              actionSheetRef.current?.setModalVisible();
-            }}
-          >
-            <KeyboardAvoidingView style={styles.innerButton}>
-              <Text style={styles.categoryButtonText}>{(category === '') ? 'Chọn phân loại' : category.name}</Text>
-              <Image
-                source={drop_down_arrow}
-                style={styles.dropDownIcon}
-              />
-            </KeyboardAvoidingView>
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -218,7 +226,7 @@ const AddTransaction = ({ navigation }) => {
           <TouchableOpacity
             onPress={() => { setDTPickerVisible(true) }}
           >
-            <Text style={{ ...FONTS.h2, paddingVertical: 20 }}>{DateTime.fromISO(date.toISOString()).toFormat('dd/MM/yyyy')}</Text>
+            <Text style={{ ...FONTS.h2, paddingVertical: 20 }}>{DateTime.fromISO(date.toISOString()).toFormat('DDDD')}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.containerTextInput}>
@@ -227,6 +235,7 @@ const AddTransaction = ({ navigation }) => {
             style={{ ...styles.icon, alignSelf: 'auto', marginTop: 20 }}
           />
           <TextInput
+            value={description}
             style={{
               ...styles.textInput,
               height: 150
@@ -245,7 +254,7 @@ const AddTransaction = ({ navigation }) => {
         style={styles.addButton}
         onPress={checkNewTransaction}
       >
-        <Text style={styles.categoryButtonText}>Thêm</Text>
+        <Text style={styles.categoryButtonText}>{importData ? 'Chỉnh sửa' : 'Thêm'}</Text>
       </TouchableOpacity>
       <ActionSheet
         ref={actionSheetRef}

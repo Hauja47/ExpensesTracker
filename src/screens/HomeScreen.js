@@ -215,13 +215,7 @@ const HomeScreen = ({ navigation }) => {
     }
 
     const handleTransactionInfoPress = (item) => {
-      navigation.navigate('TransactionDetail', {
-        id: item.id,
-        category: item.name,
-        amount: item.amount,
-        description: item.description,
-        date: item.date
-      })
+      navigation.navigate('TransactionDetail', item)
     }
 
     const renderTransactionInfoItemData = ({ item }) => {

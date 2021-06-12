@@ -35,7 +35,6 @@ const TransactionDetail = ({ route, navigation }) => {
     const dispatch = useDispatch();
 
     const handleDelete = () => {
-
         Alert.alert(
             'Cảnh báo',
             'Bạn sẽ không thể hoàn tác một khi tiếp tục!\nXác định?',
@@ -48,7 +47,7 @@ const TransactionDetail = ({ route, navigation }) => {
     }
 
     const handleEdit = () => {
-
+        navigation.navigate('AddTransaction', data)
     }
 
     return (
@@ -64,7 +63,7 @@ const TransactionDetail = ({ route, navigation }) => {
                     >
                         <Image
                             source={back}
-                            style={[styles.icon, {tintColor: COLORS.white}]}
+                            style={[styles.icon, { tintColor: COLORS.white }]}
                         />
                     </TouchableOpacity>
                     <Text
@@ -84,7 +83,7 @@ const TransactionDetail = ({ route, navigation }) => {
                     >
                         <Image
                             source={delete_icon}
-                            style={[styles.icon, {tintColor: COLORS.white}]}
+                            style={[styles.icon, { tintColor: COLORS.white }]}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -93,7 +92,7 @@ const TransactionDetail = ({ route, navigation }) => {
                     >
                         <Image
                             source={edit}
-                            style={[styles.icon, {tintColor: COLORS.white}]}
+                            style={[styles.icon, { tintColor: COLORS.white }]}
                         />
                     </TouchableOpacity>
                 </View>
@@ -147,7 +146,7 @@ const TransactionDetail = ({ route, navigation }) => {
                                     COLORS.red :
                                     COLORS.green
                             }
-                        ]}>{data.category}</Text>
+                        ]}>{data.name}</Text>
                     </View>
                 </View>
 
