@@ -35,14 +35,10 @@ const AddTransaction = ({ route, navigation }) => {
 
   const { categories } = useSelector(state => state.categoriesReducer);
 
-  const isFocus = useIsFocused();
-
   const [date, setDate] = useState(new Date());
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const [incomeCategories, setIncomeCategories] = useState([]);
-  const [expenseCategories, setExpenseCategories] = useState([]);
   const [showDTPicker, setDTPickerVisible] = useState(false);
 
   useEffect(() => {
@@ -147,10 +143,11 @@ const AddTransaction = ({ route, navigation }) => {
 
     let data = {
       id: importData ? importData.id : null,
-      category_id: category.id,
+      name: category.name,
       amount: amount,
       description: description,
       date: DateTime.fromISO(date.toISOString()).toFormat('yyyy-MM-dd'),
+      type: category.type
     }
 
     importData ? updateToTransaction(data) : addToTransaction(data);
