@@ -36,21 +36,21 @@ const createTRANSACTIONS = () => {
             (err) => console.error(err)
           );
 
-          txn.executeSql(
-            'INSERT INTO TRANSACTIONS(category_id, amount, description, date) VALUES(?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?);',
-            [
-              1, 5182000, 'Học phí', '2021-05-21',
-              3, 160000, 'Mua thuốc nhỏ mắt', '2021-08-19',
-              2, 50000, 'Trà sữa', '2021-08-19',
-              9, 500000, 'Thưởng', '2021-10-15',
-              10, 300000, 'Lãi', '2021-10-16',
-              9, 10000, 'Thưởng gì đó', '2021-10-25',
-              8, 1200000, 'Lương tháng', '2021-10-15',
-              4, 22000, 'Tiền cơm', '2021-10-16',
-              6, 50000, 'Về nhà', '2021-08-19',
-              10, 200000, 'Lãi gì đó', '2021-10-25'
-            ]
-          );
+          // txn.executeSql(
+          //   'INSERT INTO TRANSACTIONS(category_id, amount, description, date) VALUES(?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?);',
+          //   [
+          //     1, 5182000, 'Học phí', '2021-05-21',
+          //     3, 160000, 'Mua thuốc nhỏ mắt', '2021-08-19',
+          //     2, 50000, 'Trà sữa', '2021-08-19',
+          //     9, 500000, 'Thưởng', '2021-10-15',
+          //     10, 300000, 'Lãi', '2021-10-16',
+          //     9, 10000, 'Thưởng gì đó', '2021-10-25',
+          //     8, 1200000, 'Lương tháng', '2021-10-15',
+          //     4, 22000, 'Tiền cơm', '2021-10-16',
+          //     6, 50000, 'Về nhà', '2021-08-19',
+          //     10, 200000, 'Lãi gì đó', '2021-10-25'
+          //   ]
+          // );
         }
       }
     )
@@ -92,8 +92,9 @@ export const getTransactions = () => {
           let transacItem = convertData(res.rows.raw())
 
           transacItem.sort((a, b) =>
-            DateTime.fromFormat('yyyy-MM-dd', a.date).toMillis() <
-            DateTime.fromFormat('yyyy-MM-dd', b.date).toMillis() && 1 || -1)
+            DateTime.fromFormat(a.date, 'yyyy-MM-dd').toMillis() <
+            DateTime.fromFormat(b.date, 'yyyy-MM-dd').toMillis() && 1 || -1
+          )
 
           dispatch({
             type: GET_TRANSACTIONS,
@@ -110,19 +111,19 @@ export const addTransaction = (transaction, navigation) => {
   return dispatch => {
     db.transaction((txn) => {
       txn.executeSql(
-        'INSERT INTO TRANSACTIONS(category_id, amount, description, date) VALUES(?, ?, ?, ?);',
+        'INSERT INTO TRANSACTIONS(category_id, amount, description, date) VALUES((SELECT id FROM CATEGORY WHERE name=?), ?, ?, ?);',
         [
-          transaction.category_id,
-          transaction.amount,
+          transaction.name,
+          (transaction.type == 'income') ? transaction.amount : -transaction.amount,
           transaction.description,
           transaction.date,
         ],
         (tx, res) => {
           if (res.rowsAffected === 1) {
             txn.executeSql(
-              'SELECT TRANSACTIONS.id, name, description, date, type, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id WHERE category_id=? and amount=? and description=? and date=?;',
+              'SELECT TRANSACTIONS.id, name, description, date, type, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id WHERE category_id=(SELECT id FROM CATEGORY WHERE name=?) and amount=? and description=? and date=?;',
               [
-                transaction.category_id,
+                transaction.name,
                 transaction.amount,
                 transaction.description,
                 transaction.date,
@@ -154,7 +155,7 @@ export const addTransaction = (transaction, navigation) => {
         },
         (err) => console.error(err.message)
       );
-    }, (err) => { console.log(err.message) });
+    }, (err) => { console.error(err.message) });
   }
 }
 
@@ -199,9 +200,9 @@ export const updateTransaction = (data, oldDate, navigation) => {
   return dispatch => {
     db.transaction(tx => {
       tx.executeSql(
-        'UPDATE TRANSACTIONS SET category_id=?, description=?, date=?, amount=? WHERE id=?',
+        'UPDATE TRANSACTIONS SET category_id=(SELECT id FROM CATEGORY WHERE name=?), description=?, date=?, amount=? WHERE id=?',
         [
-          data.category_id, 
+          data.name,
           data.description,
           data.date,
           data.amount,
@@ -231,8 +232,8 @@ export const updateTransaction = (data, oldDate, navigation) => {
               'Đã có vấn đề xảy ra. Xin hãy thử lại!',
             )
           }
-        }
+        }, (err) => console.error(err.message)
       )
-    })
+    }, (err) => console.error(err.message))
   }
 }
