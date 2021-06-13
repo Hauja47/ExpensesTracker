@@ -11,7 +11,7 @@ import {
     Alert
 } from 'react-native'
 import NumberFormat from 'react-number-format';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { COLORS, SIZES, FONTS } from '../constants/theme';
 import {
@@ -29,8 +29,10 @@ const { DateTime } = require('luxon');
 
 const TransactionDetail = ({ route, navigation }) => {
 
-    const data = route.params;
-    const date = DateTime.fromFormat(data.date, 'yyyy-MM-dd').setLocale('vi');
+    const { transactions } = useSelector(state => state.transactionsReducer);
+
+    const data = transactions.find(transaction => transaction.date === route.params.date).data.find(data => data.id === route.params.id);
+    const date = DateTime.fromISO((new Date(data.date)).toISOString()).setLocale('vi');
 
     const dispatch = useDispatch();
 
