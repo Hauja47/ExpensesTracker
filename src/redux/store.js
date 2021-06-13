@@ -3,8 +3,10 @@ import thunk from 'redux-thunk';
 
 import categoriesReducer from './reducers/categoriesReducer';
 import transactionsReducer from './reducers/transactionsReducer';
+import accountReducer from './reducers/accountReducer';
 
 const rootReducer = combineReducers({
+    accountReducer,
     categoriesReducer,
     transactionsReducer,
 })

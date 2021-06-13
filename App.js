@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack'
 import { Provider } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCategories, getTransactions } from './src/redux/actions'
+import { getCategories, getTransactions, getAccount } from './src/redux/actions'
 
 import { store } from './src/redux/store';
 import {
@@ -32,15 +32,17 @@ const App = () => {
   const dispatch = useDispatch();
   const { isCategoriesLoaded } = useSelector(state => state.categoriesReducer)
   const { isTransactionsLoaded } = useSelector(state => state.transactionsReducer)
+  const { isAccountLoaded } = useSelector(state => state.accountReducer)
 
   React.useEffect(() => {
     dispatch(getCategories());
-    dispatch(getTransactions());
+    dispatch(getTransactions());   
+    dispatch(getAccount());
   }, [])
 
   return (
     <NavigationContainer>
-      {(!(isCategoriesLoaded && isTransactionsLoaded)) ? (
+      {(!(isCategoriesLoaded && isTransactionsLoaded && isAccountLoaded)) ? (
         <Stack.Navigator
           initialRouteName='SplashScreen'
           screenOptions={{ headerShown: false }}
@@ -73,6 +75,15 @@ const App = () => {
           />
         </AppStack.Navigator>
       )}
+      {/* <Stack.Navigator
+        initialRouteName='SplashScreen'
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen
+          name="SplashScreen"
+          component={SplashScreen}
+        />
+      </Stack.Navigator> */}
     </NavigationContainer>
   )
 }
