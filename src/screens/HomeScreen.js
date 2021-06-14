@@ -10,16 +10,20 @@ import {
   Image,
   Animated
 } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import NumberFormat from 'react-number-format';
 import MonthPicker from 'react-native-month-year-picker'
-import { useIsFocused } from '@react-navigation/native';
+import { ButtonGroup } from 'react-native-elements';
 
 import { COLORS, FONTS, SIZES } from '../constants/theme';
-import { down_arrow, up_arrow, drop_down_arrow, edit } from '../constants/icons';
-import { getAccount } from '../redux/actions/accountAction';
-
+import { down_arrow, up_arrow, drop_down_arrow, edit, wallet } from '../constants/icons';
 const transactionType = [
+  {
+    id: 0,
+    name: 'Tất cả',
+    color: COLORS.lightblue,
+    type: 'all'
+  },
   {
     id: 1,
     name: 'Chi tiêu',
@@ -38,10 +42,7 @@ const transactionType = [
 
 const HomeScreen = ({ navigation }) => {
 
-  const isFocus = useIsFocused();
-  const dispatch = useDispatch();
-
-  const [selectedTransactionType, setSelectedTransactionType] = useState('all');
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [showMYP, setshowMYP] = useState(false);
   const [date, setDate] = useState(new Date())
 
@@ -50,11 +51,6 @@ const HomeScreen = ({ navigation }) => {
   const { account } = useSelector(state => state.accountReducer);
 
   const categoryListHeightAnimationValue = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    console.log('account:', account)
-    console.log('transactions:', transactions)
-  }, [isFocus])
 
   const renderMonthYearPicker = () => {
     const onValueChange = React.useCallback(
@@ -94,77 +90,17 @@ const HomeScreen = ({ navigation }) => {
   }
 
   const renderTransactionType = () => {
-    const renderItem = ({ item }) => (
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          height: 40,
-          marginTop: 2,
-          borderRadius: 22,
-          paddingHorizontal: SIZES.base,
-          backgroundColor: (selectedTransactionType && selectedTransactionType == item.type) ? item.color : 'gold'
-        }}
-        onPress={() => {
-          switch (selectedTransactionType) {
-            case 'all':
-              setSelectedTransactionType(item.type)
-              Animated.timing(categoryListHeightAnimationValue, {
-                toValue: 55,
-                duration: 500,
-                useNativeDriver: false,
-              }).start()
-              break;
-            case item.type:
-              setSelectedTransactionType('all')
-              Animated.timing(categoryListHeightAnimationValue, {
-                toValue: 0,
-                duration: 500,
-                useNativeDriver: false,
-              }).start()
-              break;
-            default:
-              setSelectedTransactionType(item.type)
-              break;
-          }
-        }}
-      >
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-          <Image
-            source={item.icon}
-            style={{
-              width: 17,
-              height: 17,
-              tintColor: (selectedTransactionType && selectedTransactionType == item.type) ? COLORS.white : item.color,
-            }}
-          />
-          <Text style={{
-            marginLeft: SIZES.base,
-            ...FONTS.h3,
-            color: (selectedTransactionType && selectedTransactionType == item.type) ? COLORS.white : COLORS.primary
-          }}>{item.name}</Text>
-        </View>
-        <NumberFormat
-          value={'1000'}
-          displayType={'text'}
-          thousandSeparator={true}
-          suffix='đ'
-          renderText={formattedValue =>
-            <View style={{ justifyContent: 'center' }}>
-              <Text style={{
-                ...FONTS.h3,
-                color: (selectedTransactionType && selectedTransactionType == item.type) ? COLORS.white : COLORS.primary
-              }}>{formattedValue}</Text>
-            </View>
-          }
-        />
-      </TouchableOpacity>
-    )
+
+    const updateIndex = (index) => {
+      setSelectedIndex(index)
+    }
 
     return (
-      <FlatList
-        data={transactionType}
-        keyExtractor={item => item.id}
-        renderItem={renderItem}
+      <ButtonGroup
+        buttons={transactionType.map(type => type.name)}
+        selectedIndex={selectedIndex}
+        selectedButtonStyle={{ backgroundColor: transactionType.find(type => type.id === selectedIndex).color }}
+        onPress={updateIndex}
       />
     )
   }
@@ -189,8 +125,8 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
-  const getFilteredData = (type) => {
-    let temp = categories.filter(category => category.type == type)
+  const getFilteredData = (index) => {
+    let temp = categories.filter(category => category.type == transactionType[index].name)
     return temp;
   }
 
@@ -198,9 +134,9 @@ const HomeScreen = ({ navigation }) => {
     return (
       <View style={{ height: 55, marginLeft: 10 }}>
         {
-          selectedTransactionType != 'all' &&
+          selectedIndex != 0 &&
           <FlatList
-            data={getFilteredData(selectedTransactionType)}
+            data={getFilteredData(selectedIndex)}
             renderItem={renderCategoryListItem}
             keyExtractor={item => item.id}
             horizontal
@@ -216,9 +152,9 @@ const HomeScreen = ({ navigation }) => {
 
       let sum = item.filter((data) => {
         return data.type == transacType;
-      }).map((data, index, array) => {
+      }).map((data) => {
         return data.amount;
-      }).reduce((acc, curValue, curIndex, array) => {
+      }).reduce((acc, curValue) => {
         return acc + curValue;
       }, 0)
 
@@ -333,18 +269,16 @@ const HomeScreen = ({ navigation }) => {
     }
 
     return (
-      <View style={{ flex: 1, marginTop: 10 }}>
-        <FlatList
-          contentContainerStyle={{
-            padding: 10,
-          }}
-          showsVerticalScrollIndicator={false}
-          data={transactions}
-          keyExtractor={item => item.date}
-          renderItem={renderTransactionInfoItem}
-          ItemSeparatorComponent={() => (<View style={{ padding: 5 }} />)}
-        />
-      </View>
+      <FlatList
+        contentContainerStyle={{
+          padding: 10,
+        }}
+        showsVerticalScrollIndicator={false}
+        data={transactions}
+        keyExtractor={item => item.date}
+        renderItem={renderTransactionInfoItem}
+        ItemSeparatorComponent={() => (<View style={{ padding: 7 }} />)}
+      />
     )
   }
 
@@ -354,26 +288,71 @@ const HomeScreen = ({ navigation }) => {
       flex: 1,
     }}>
       <View style={{
-        ...styles.walletContainer,
-        ...styles.shadow,
-        backgroundColor: 'gold',
-        height: 250,
+        flex: 0.2,
+        backgroundColor: COLORS.blue,
+        flexDirection: 'row'
       }}>
-        <View style={{ flex: 1, padding: 22 }}>
-          <Text style={{ ...FONTS.body2, color: COLORS.darkgray }}>Số dư</Text>
-          <Text style={{ ...FONTS.h1, fontSize: 35, color: COLORS.primary, marginTop: 5 }}>{account.amount} đ</Text>
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          marginHorizontal: 10
+        }}>
+          <View style={{ flexDirection: 'row' }}>
+            {/* <Image
+              source={wallet}
+              style={styles.icon}
+            /> */}
+            <Text
+              style={{
+                fontSize: 20,
+                color: COLORS.white,
+                alignSelf: 'center',
+              }}>Số dư
+            </Text>
+          </View>
+          <NumberFormat
+            value={account.amount}
+            displayType={'text'}
+            thousandSeparator={true}
+            suffix='đ'
+            renderText={formattedValue =>
+              <Text
+                style={{
+                  fontSize: 35,
+                  color: (account.amount >= 0) ? COLORS.green : COLORS.red,
+                }}
+              >
+                {formattedValue}
+              </Text>
+            }
+          />
         </View>
-        <View style={{ width: '100%', alignSelf: 'center', paddingHorizontal: 10, paddingBottom: 10 }}>
-          {renderMonthYearPicker()}
-          {renderTransactionType()}
-        </View>
+        <TouchableOpacity style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: 10
+        }}>
+          <Image
+            source={edit}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
       </View>
+
+      <View style={styles.monthYearContainer}>
+        <Text style={{ ...FONTS.body2, alignSelf: 'center' }}>Thời gian:</Text>
+        {renderMonthYearPicker()}
+      </View>
+
+      {renderTransactionType()}
 
       <Animated.View style={{ height: categoryListHeightAnimationValue, marginTop: 0 }}>
         {renderCategoryList()}
       </Animated.View>
 
-      {renderTransactionInfo()}
+      <View style={{ flex: 1 }}>
+        {renderTransactionInfo()}
+      </View>
 
       <TouchableOpacity
         style={styles.addTransactionButton}
@@ -393,11 +372,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.29,
     shadowRadius: 4.65,
     elevation: 7,
-  },
-  walletContainer: {
-    borderRadius: 40,
-    marginHorizontal: 10,
-    marginTop: 27
   },
   addTransactionButton: {
     width: 60,
@@ -438,11 +412,18 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.blue
   },
   icon: {
-    height: 25,
-    width: 25,
-    marginHorizontal: 10,
+    height: 30,
+    width: 30,
     alignSelf: 'center',
     justifyContent: 'center',
+    tintColor: COLORS.white
+  },
+  monthYearContainer: {
+    flexWrap: 'wrap',
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   }
 })
 
