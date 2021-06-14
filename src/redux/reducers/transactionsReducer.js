@@ -1,3 +1,4 @@
+import { getAccount } from '../actions/accountAction';
 import { ADD_TRANSACTION, DELETE_TRANSACTION, GET_TRANSACTIONS, UPDATE_TRANSACTION } from '../actions/actions';
 const { DateTime } = require('luxon')
 
@@ -6,7 +7,7 @@ const initialState = {
     isTransactionsLoaded: false
 }
 
-function addItem(array, data) {
+const addItem = (array, data) => {
     let dataSameDate = array.find(item => item.date == data.date);
     if (dataSameDate) {
         dataSameDate.data.push(data)
@@ -25,7 +26,7 @@ function addItem(array, data) {
     return array;
 }
 
-function deleteItem(array, data) {
+const deleteItem = (array, data) => {
     array.find(item => item.date == data.date).data =
         array.find(item => item.date == data.date).data.filter(d => d.id !== data.id);
 
@@ -41,7 +42,7 @@ function deleteItem(array, data) {
     return array;
 }
 
-function updateItem(array, data, oldDate) {
+const updateItem = (array, data, oldDate) => {
     if (oldDate === data.date) {
         array.find(item => item.date = oldDate).data = array.find(item => item.date = oldDate).data.map(item => {
             return (item.id === data.id) ? {
@@ -81,12 +82,12 @@ function updateItem(array, data, oldDate) {
     return array;
 }
 
-function categoriesReducer(state = initialState, action) {
+const categoriesReducer = (state = initialState, action) => {
     switch (action.type) {
         case ADD_TRANSACTION:
             return {
                 ...state,
-                transactions: addItem(state.transactions, action.payload)
+                transactions: addItem(state.transactions, action.payload),
             }
         case GET_TRANSACTIONS:
             return {
