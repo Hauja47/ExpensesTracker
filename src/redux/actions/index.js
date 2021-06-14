@@ -1,6 +1,6 @@
 import { getCategories } from './categoriesAction';
 import { getTransactions } from './transactionsAction'
-import { getAccount } from './acountAction'; 
+import { getAccount } from './accountAction'; 
 
 export {
     getCategories,

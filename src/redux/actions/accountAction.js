@@ -43,7 +43,7 @@ const createACCOUNT = () => {
 
 export const getAccount = () => {
     createACCOUNT();
-
+    
     return dispatch => {
         db.transaction((tx) => {
             tx.executeSql(
