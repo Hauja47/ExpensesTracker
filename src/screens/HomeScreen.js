@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,14 @@ import {
   Image,
   Animated
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import NumberFormat from 'react-number-format';
 import MonthPicker from 'react-native-month-year-picker'
+import { useIsFocused } from '@react-navigation/native';
 
 import { COLORS, FONTS, SIZES } from '../constants/theme';
-import { down_arrow, up_arrow, drop_down_arrow } from '../constants/icons';
+import { down_arrow, up_arrow, drop_down_arrow, edit } from '../constants/icons';
+import { getAccount } from '../redux/actions/accountAction';
 
 const transactionType = [
   {
@@ -36,21 +38,29 @@ const transactionType = [
 
 const HomeScreen = ({ navigation }) => {
 
+  const isFocus = useIsFocused();
+  const dispatch = useDispatch();
+
   const [selectedTransactionType, setSelectedTransactionType] = useState('all');
   const [showMYP, setshowMYP] = useState(false);
   const [date, setDate] = useState(new Date())
 
   const { categories } = useSelector(state => state.categoriesReducer);
   const { transactions } = useSelector(state => state.transactionsReducer);
+  const { account } = useSelector(state => state.accountReducer);
 
   const categoryListHeightAnimationValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    console.log('account:', account)
+    console.log('transactions:', transactions)
+  }, [isFocus])
 
   const renderMonthYearPicker = () => {
     const onValueChange = React.useCallback(
       (event, newDate) => {
         const selectedDate = newDate || date;
 
-        console.log(date, newDate)
         setshowMYP(false);
         setDate(selectedDate);
       },
@@ -66,7 +76,8 @@ const HomeScreen = ({ navigation }) => {
           <Text style={{ ...FONTS.h3, color: COLORS.white }}>Tháng {date.getMonth() + 1} năm {date.getFullYear()}</Text>
           <Image
             source={drop_down_arrow}
-            style={{ height: 15, width: 15, tintColor: COLORS.white, alignSelf: 'center', marginLeft: 5 }} />
+            style={{ height: 15, width: 15, tintColor: COLORS.white, alignSelf: 'center', marginLeft: 5 }}
+          />
         </TouchableOpacity>
         {showMYP && (
           <MonthPicker
@@ -215,7 +226,10 @@ const HomeScreen = ({ navigation }) => {
     }
 
     const handleTransactionInfoPress = (item) => {
-      navigation.navigate('TransactionDetail', item)
+      navigation.navigate('TransactionDetail', {
+        id: item.id,
+        date: item.date
+      })
     }
 
     const renderTransactionInfoItemData = ({ item }) => {
@@ -261,7 +275,7 @@ const HomeScreen = ({ navigation }) => {
 
     const renderTransactionInfoItem = ({ item }) => {
       return (
-        <View style={{ flex: 1, borderRadius: 15, backgroundColor: 'white', elevation: 7 }}>
+        <View style={{ flex: 1, borderRadius: 15, backgroundColor: COLORS.white, elevation: 5 }}>
           <View style={{
             flex: 1,
             flexDirection: 'row',
@@ -347,7 +361,7 @@ const HomeScreen = ({ navigation }) => {
       }}>
         <View style={{ flex: 1, padding: 22 }}>
           <Text style={{ ...FONTS.body2, color: COLORS.darkgray }}>Số dư</Text>
-          <Text style={{ ...FONTS.h1, fontSize: 35, color: COLORS.primary, marginTop: 5 }}>100.000.000 đ</Text>
+          <Text style={{ ...FONTS.h1, fontSize: 35, color: COLORS.primary, marginTop: 5 }}>{account.amount} đ</Text>
         </View>
         <View style={{ width: '100%', alignSelf: 'center', paddingHorizontal: 10, paddingBottom: 10 }}>
           {renderMonthYearPicker()}
@@ -422,6 +436,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     borderRadius: 25,
     backgroundColor: COLORS.blue
+  },
+  icon: {
+    height: 25,
+    width: 25,
+    marginHorizontal: 10,
+    alignSelf: 'center',
+    justifyContent: 'center',
   }
 })
 

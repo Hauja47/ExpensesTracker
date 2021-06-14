@@ -3,13 +3,14 @@ import {
   ADD_TRANSACTION,
   GET_TRANSACTIONS,
   DELETE_TRANSACTION,
-  UPDATE_TRANSACTION
+  UPDATE_TRANSACTION,
 } from './actions';
 import {
   Alert
 } from 'react-native';
 
 import { openDatabase } from 'react-native-sqlite-storage';
+import { getAccount } from './accountAction';
 
 const db = openDatabase({ name: 'fiance.db' });
 const { DateTime } = require('luxon')
@@ -140,6 +141,8 @@ export const addTransaction = (transaction, navigation) => {
                   { cancelable: false }
                 )
 
+                dispatch(getAccount())
+
                 dispatch({
                   type: ADD_TRANSACTION,
                   payload: temp
@@ -175,6 +178,8 @@ export const deleteTransaction = (dataId, dataDate, navigation) => {
               ],
               { cancelable: false }
             )
+
+            dispatch(getAccount())
 
             dispatch({
               type: DELETE_TRANSACTION,
@@ -218,6 +223,8 @@ export const updateTransaction = (data, oldDate, navigation) => {
               ],
               { cancelable: false }
             )
+
+            dispatch(getAccount())
 
             dispatch({
               type: UPDATE_TRANSACTION,
