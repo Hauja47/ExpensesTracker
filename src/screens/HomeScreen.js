@@ -15,6 +15,7 @@ import NumberFormat from 'react-number-format';
 import MonthPicker from 'react-native-month-year-picker'
 import { ButtonGroup } from 'react-native-elements';
 
+import Chip from './components/Chip'
 import { COLORS, FONTS, SIZES } from '../constants/theme';
 import { down_arrow, up_arrow, drop_down_arrow, edit, wallet } from '../constants/icons';
 const transactionType = [
@@ -92,7 +93,28 @@ const HomeScreen = ({ navigation }) => {
   const renderTransactionType = () => {
 
     const updateIndex = (index) => {
-      setSelectedIndex(index)
+
+      switch (index) {
+        case 0:
+          setSelectedIndex(index)
+          Animated.timing(categoryListHeightAnimationValue, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: false,
+          }).start()
+          break;
+        case 1:
+        case 2:
+          setSelectedIndex(index)
+          Animated.timing(categoryListHeightAnimationValue, {
+            toValue: 50,
+            duration: 500,
+            useNativeDriver: false,
+          }).start()
+          break;
+        default:
+          break;
+      }
     }
 
     return (
@@ -105,38 +127,33 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
-  const renderCategoryListItem = ({ item }) => {
-    return (
-      <TouchableOpacity
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          margin: 5,
-          marginLeft: 1,
-          paddingVertical: SIZES.radius,
-          paddingHorizontal: SIZES.padding,
-          borderRadius: 5,
-          backgroundColor: COLORS.white,
-          ...styles.shadow,
-        }}
-      >
-        <Text style={{ color: COLORS.primary, ...FONTS.h4 }}>{item.name}</Text>
-      </TouchableOpacity>
-    )
-  }
-
-  const getFilteredData = (index) => {
-    let temp = categories.filter(category => category.type == transactionType[index].name)
-    return temp;
-  }
-
   const renderCategoryList = () => {
+
+    const getFilteredData = () => {
+      if (selectedIndex === 0) {
+        return categories;
+      }
+
+      let temp = categories.filter(category => category.type === transactionType[selectedIndex].type)
+      return temp;
+    }
+
+    const renderCategoryListItem = ({ item }) => {
+      return (
+        <Chip
+          tittle={item.name}
+          onPress={() => console.log('press')}
+          color={transactionType[selectedIndex].color}
+        />
+      )
+    }
+
     return (
       <View style={{ height: 55, marginLeft: 10 }}>
         {
           selectedIndex != 0 &&
           <FlatList
-            data={getFilteredData(selectedIndex)}
+            data={getFilteredData()}
             renderItem={renderCategoryListItem}
             keyExtractor={item => item.id}
             horizontal
@@ -307,7 +324,9 @@ const HomeScreen = ({ navigation }) => {
                 fontSize: 20,
                 color: COLORS.white,
                 alignSelf: 'center',
-              }}>Số dư
+              }}
+            >
+              Số dư
             </Text>
           </View>
           <NumberFormat
