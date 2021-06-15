@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, createRef } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import { ButtonGroup } from 'react-native-elements';
 import Chip from './components/Chip'
 import { COLORS, FONTS, SIZES } from '../constants/theme';
 import { down_arrow, up_arrow, drop_down_arrow, edit, wallet } from '../constants/icons';
+
 const transactionType = [
   {
     id: 0,
@@ -45,13 +46,15 @@ const HomeScreen = ({ navigation }) => {
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showMYP, setshowMYP] = useState(false);
-  const [date, setDate] = useState(new Date())
+  const [date, setDate] = useState(new Date());
+  const [selectedCategories, changeCategories] = useState(['']);
 
   const { categories } = useSelector(state => state.categoriesReducer);
   const { transactions } = useSelector(state => state.transactionsReducer);
   const { account } = useSelector(state => state.accountReducer);
 
   const categoryListHeightAnimationValue = useRef(new Animated.Value(0)).current;
+  const flatlistTrnInfRef = useRef()
 
   const renderMonthYearPicker = () => {
     const onValueChange = React.useCallback(
@@ -90,10 +93,60 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
+  const renderCategoryList = () => {
+
+    const getFilteredData = () => {
+      if (selectedIndex === 0) {
+        return categories;
+      }
+
+      let temp = categories.filter(category => category.type === transactionType[selectedIndex].type)
+      return temp;
+    }
+
+    const handlePress = (item) => {
+      console.log(item.name)
+      if (selectedCategories.includes(item.name)) {
+        const temp = selectedCategories.filter((t) => t !== item.name);
+        changeCategories(temp);
+      } else {
+        changeCategories([...selectedCategories, item.name])
+      }
+      if (selectedCategories.includes("")) {
+        const temp = selectedCategories.filter((t) => t !== "");
+        changeCategories(temp);
+      }
+      console.log(selectedCategories)
+    }
+
+    const renderCategoryListItem = ({ item }) => (
+      <Chip
+        tittle={item.name}
+        onPress={() => handlePress(item)}
+        color={transactionType[selectedIndex].color}
+      />
+    )
+
+    return (
+      <View style={{ height: 55, marginLeft: 10 }}>
+        {
+          selectedIndex != 0 &&
+          <FlatList
+            ref={flatlistTrnInfRef}
+            data={getFilteredData()}
+            renderItem={renderCategoryListItem}
+            keyExtractor={item => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+        }
+      </View>
+    )
+  }
+
   const renderTransactionType = () => {
 
     const updateIndex = (index) => {
-
       switch (index) {
         case 0:
           setSelectedIndex(index)
@@ -111,6 +164,7 @@ const HomeScreen = ({ navigation }) => {
             duration: 500,
             useNativeDriver: false,
           }).start()
+          flatlistTrnInfRef.current?.scrollToIndex({ index: 0 });
           break;
         default:
           break;
@@ -124,43 +178,6 @@ const HomeScreen = ({ navigation }) => {
         selectedButtonStyle={{ backgroundColor: transactionType.find(type => type.id === selectedIndex).color }}
         onPress={updateIndex}
       />
-    )
-  }
-
-  const renderCategoryList = () => {
-
-    const getFilteredData = () => {
-      if (selectedIndex === 0) {
-        return categories;
-      }
-
-      let temp = categories.filter(category => category.type === transactionType[selectedIndex].type)
-      return temp;
-    }
-
-    const renderCategoryListItem = ({ item }) => {
-      return (
-        <Chip
-          tittle={item.name}
-          onPress={() => console.log('press')}
-          color={transactionType[selectedIndex].color}
-        />
-      )
-    }
-
-    return (
-      <View style={{ height: 55, marginLeft: 10 }}>
-        {
-          selectedIndex != 0 &&
-          <FlatList
-            data={getFilteredData()}
-            renderItem={renderCategoryListItem}
-            keyExtractor={item => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
-        }
-      </View>
     )
   }
 
@@ -285,8 +302,21 @@ const HomeScreen = ({ navigation }) => {
       )
     }
 
+    const filteredData = () => (
+      transactions.filter(tn =>
+        tn.date.split('-')[1] === date.getMonth && tn.date.split('-')[1] === date.getFullYear
+      ).map(tx =>
+        tx.data.filter(t => {
+          if (selectedCategories.includes(t.type)) {
+            return t;
+          }
+        })
+      )
+    )
+
     return (
       <FlatList
+        ref={flatlistTrnInfRef}
         contentContainerStyle={{
           padding: 10,
         }}
@@ -295,6 +325,7 @@ const HomeScreen = ({ navigation }) => {
         keyExtractor={item => item.date}
         renderItem={renderTransactionInfoItem}
         ItemSeparatorComponent={() => (<View style={{ padding: 7 }} />)}
+        initialNumToRender={10}
       />
     )
   }
