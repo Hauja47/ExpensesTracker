@@ -43,36 +43,23 @@ const deleteItem = (array, data) => {
 }
 
 const updateItem = (array, data, oldDate) => {
-    if (oldDate === data.date) {
-        array.find(item => item.date = oldDate).data = array.find(item => item.date = oldDate).data.map(item => {
-            return (item.id === data.id) ? {
-                id: data.id,
-                name: data.name,
-                date: data.date,
-                amount: data.amount,
-                description: data.description,
-                type: data.type,
-            } : item
-        })
-    } else {
-        array = deleteItem(array, {
-            id: data.id,
-            name: data.name,
-            date: oldDate,
-            amount: data.amount,
-            description: data.description,
-            type: data.type,
-        })
+    array = deleteItem(array, {
+        id: data.id,
+        name: data.name,
+        date: oldDate,
+        amount: data.amount,
+        description: data.description,
+        type: data.type,
+    })
 
-        array = addItem(array, {
-            id: data.id,
-            name: data.name,
-            date: data.date,
-            amount: data.amount,
-            description: data.description,
-            type: data.type,
-        })
-    }
+    array = addItem(array, {
+        id: data.id,
+        name: data.name,
+        date: data.date,
+        amount: data.amount,
+        description: data.description,
+        type: data.type,
+    })
 
     array.sort((a, b) =>
         DateTime.fromFormat(a.date, 'yyyy-MM-dd').toMillis() <
