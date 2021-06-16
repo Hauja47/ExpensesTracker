@@ -11,7 +11,7 @@ import {
   Alert
 } from 'react-native'
 import NumberFormat from 'react-number-format';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 
 import { COLORS, SIZES, FONTS } from '../constants/theme';
 import {
@@ -31,14 +31,12 @@ const TransactionDetail = ({ route, navigation }) => {
 
   const { transactions } = useSelector(state => state.transactionsReducer);
 
-  const data = (transactions.find(transaction => transaction.date === route.params.date)?.data) ?
-    transactions.find(transaction => transaction.date === route.params.date).data.find(data => data.id === route.params.id) :
-    data;
-  const date = (data) ?
-    DateTime.fromISO((new Date(data.date)).toISOString()).setLocale('vi') :
-    date;
-
   const dispatch = useDispatch();
+
+  const data = transactions.find(transaction => transaction.data.find(item => item.id == route.params.id))?.data[0]
+  const date = (data) ?
+    DateTime.fromISO((new Date(data?.date)).toISOString()).setLocale('vi') :
+    date;
 
   const handleDelete = () => {
     Alert.alert(
