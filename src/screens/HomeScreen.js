@@ -19,6 +19,8 @@ import Chip from './components/Chip'
 import { COLORS, FONTS, SIZES } from '../constants/theme';
 import { down_arrow, up_arrow, drop_down_arrow, edit, wallet } from '../constants/icons';
 
+const { DateTime } = require('luxon')
+
 const transactionType = [
   {
     id: 0,
@@ -47,14 +49,14 @@ const HomeScreen = ({ navigation }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showMYP, setshowMYP] = useState(false);
   const [date, setDate] = useState(new Date());
-  const [selectedCategories, changeCategories] = useState(['']);
+  const [selectedCategories, changeCategories] = useState([]);
 
   const { categories } = useSelector(state => state.categoriesReducer);
   const { transactions } = useSelector(state => state.transactionsReducer);
   const { account } = useSelector(state => state.accountReducer);
 
   const categoryListHeightAnimationValue = useRef(new Animated.Value(0)).current;
-  const flatlistTrnInfRef = useRef()
+  const flatlistTrnInfRef = useRef();
 
   const renderMonthYearPicker = () => {
     const onValueChange = React.useCallback(
@@ -73,7 +75,7 @@ const HomeScreen = ({ navigation }) => {
           style={styles.monthYearButton}
           onPress={() => setshowMYP(true)}
         >
-          <Text style={{ ...FONTS.h3, color: COLORS.white }}>Tháng {date.getMonth() + 1} năm {date.getFullYear()}</Text>
+          <Text style={{ ...FONTS.h3, color: COLORS.white }}>Tháng {DateTime.fromJSDate(date).month} năm {date.getFullYear()}</Text>
           <Image
             source={drop_down_arrow}
             style={{ height: 15, width: 15, tintColor: COLORS.white, alignSelf: 'center', marginLeft: 5 }}
@@ -105,18 +107,12 @@ const HomeScreen = ({ navigation }) => {
     }
 
     const handlePress = (item) => {
-      console.log(item.name)
       if (selectedCategories.includes(item.name)) {
-        const temp = selectedCategories.filter((t) => t !== item.name);
+        let temp = selectedCategories.filter((t) => t !== item.name);
         changeCategories(temp);
       } else {
         changeCategories([...selectedCategories, item.name])
       }
-      if (selectedCategories.includes("")) {
-        const temp = selectedCategories.filter((t) => t !== "");
-        changeCategories(temp);
-      }
-      console.log(selectedCategories)
     }
 
     const renderCategoryListItem = ({ item }) => (
@@ -147,6 +143,10 @@ const HomeScreen = ({ navigation }) => {
   const renderTransactionType = () => {
 
     const updateIndex = (index) => {
+      if (index !== selectedIndex) {
+        changeCategories([])
+      }
+
       switch (index) {
         case 0:
           setSelectedIndex(index)
@@ -244,6 +244,23 @@ const HomeScreen = ({ navigation }) => {
     }
 
     const renderTransactionInfoItem = ({ item }) => {
+      const renderSeperator = () => <View style={styles.transactionListSeperator} />
+
+      const filterDataByCategory = (transactionInDate) => {
+        switch (selectedIndex) {
+          case 0:
+            return transactionInDate;
+          case 1:
+          case 2:
+            switch (selectedCategories.length) {
+              case 0:
+                return transactionInDate.filter(transaction => transaction.type === transactionType[selectedIndex].type)
+              default:
+                return transactionInDate.filter(transaction => selectedCategories.includes(transaction.name))
+            }
+        }
+      }
+
       return (
         <View style={{ flex: 1, borderRadius: 15, backgroundColor: COLORS.white, elevation: 5 }}>
           <View style={{
@@ -256,63 +273,80 @@ const HomeScreen = ({ navigation }) => {
             </View>
             <View style={{ flex: 1, justifyContent: 'center' }}>
               <FlatList
-                data={item.data}
+                data={filterDataByCategory(item.data)}
                 keyExtractor={item => item.id}
                 renderItem={renderTransactionInfoItemData}
-                ItemSeparatorComponent={() => (<View style={styles.transactionListSeperator} />)}
+                ItemSeparatorComponent={renderSeperator}
               />
             </View>
           </View>
           <View style={styles.detailDayContainer}>
-            <View style={{ paddingHorizontal: 10, flexDirection: 'row' }}>
-              <Text style={{ ...FONTS.body4, color: COLORS.darkgray }}>Thu nhập: </Text>
-              <NumberFormat
-                value={totalAmountInDay(item.data, 'income')}
-                displayType={'text'}
-                thousandSeparator={true}
-                suffix='đ'
-                renderText={formattedValue =>
-                  <Text
-                    style={{ color: COLORS.darkgreen, ...FONTS.h4 }}
-                    numberOfLines={1}>
-                    {formattedValue}
-                  </Text>
-                }
-              />
-            </View>
-            <View style={{ paddingHorizontal: 10, flexDirection: 'row' }}>
-              <Text style={{ ...FONTS.body4, color: COLORS.darkgray }}>Chi tiêu: </Text>
-              <NumberFormat
-                value={totalAmountInDay(item.data, 'expense')}
-                displayType={'text'}
-                thousandSeparator={true}
-                suffix='đ'
-                renderText={formattedValue =>
-                  <Text
-                    style={{ color: COLORS.red, ...FONTS.h4 }}
-                    numberOfLines={1}
-                  >
-                    {formattedValue}
-                  </Text>
-                }
-              />
-            </View>
+            {
+              (selectedIndex == 0 || selectedIndex == 2) &&
+              <View style={{ paddingHorizontal: 10, flexDirection: 'row' }}>
+                <Text style={{ ...FONTS.body4, color: COLORS.darkgray }}>Thu nhập: </Text>
+                <NumberFormat
+                  value={totalAmountInDay(item.data, 'income')}
+                  displayType={'text'}
+                  thousandSeparator={true}
+                  suffix='đ'
+                  renderText={formattedValue =>
+                    <Text
+                      style={{ color: COLORS.darkgreen, ...FONTS.h4 }}
+                      numberOfLines={1}>
+                      {formattedValue}
+                    </Text>
+                  }
+                />
+              </View>
+            }
+            {
+              (selectedIndex == 0 || selectedIndex == 1) &&
+              <View style={{ paddingHorizontal: 10, flexDirection: 'row' }}>
+                <Text style={{ ...FONTS.body4, color: COLORS.darkgray }}>Chi tiêu: </Text>
+                <NumberFormat
+                  value={totalAmountInDay(item.data, 'expense')}
+                  displayType={'text'}
+                  thousandSeparator={true}
+                  suffix='đ'
+                  renderText={formattedValue =>
+                    <Text
+                      style={{ color: COLORS.red, ...FONTS.h4 }}
+                      numberOfLines={1}
+                    >
+                      {formattedValue}
+                    </Text>
+                  }
+                />
+              </View>
+            }
           </View>
         </View>
       )
     }
 
-    const filteredData = () => (
-      transactions.filter(tn =>
-        tn.date.split('-')[1] === date.getMonth && tn.date.split('-')[1] === date.getFullYear
-      ).map(tx =>
-        tx.data.filter(t => {
-          if (selectedCategories.includes(t.type)) {
-            return t;
-          }
-        })
+    const filterDataByDate = () => {
+      let filterDataByDate = transactions.filter(tn =>
+        DateTime.fromFormat(tn.date, 'yyyy-MM-dd').month === DateTime.fromJSDate(date).month &&
+        DateTime.fromFormat(tn.date, 'yyyy-MM-dd').year === DateTime.fromJSDate(date).year
       )
-    )
+
+      switch (selectedIndex) {
+        case 0:
+          return filterDataByDate;
+        case 1:
+        case 2:
+          if (selectedCategories.length) {
+            return filterDataByDate.filter(element =>
+              element.data.find(item => selectedCategories.includes(item.name))
+            );
+          } else {
+            return filterDataByDate.filter(element =>
+              element.data.find(item => item.type == transactionType[selectedIndex].type)
+            );
+          }
+      }
+    }
 
     return (
       <FlatList
@@ -321,11 +355,11 @@ const HomeScreen = ({ navigation }) => {
           padding: 10,
         }}
         showsVerticalScrollIndicator={false}
-        data={transactions}
+        data={filterDataByDate()}
         keyExtractor={item => item.date}
         renderItem={renderTransactionInfoItem}
         ItemSeparatorComponent={() => (<View style={{ padding: 7 }} />)}
-        initialNumToRender={10}
+        initialNumToRender={7}
       />
     )
   }
