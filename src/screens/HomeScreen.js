@@ -164,7 +164,7 @@ const HomeScreen = ({ navigation }) => {
             duration: 500,
             useNativeDriver: false,
           }).start()
-          flatlistTrnInfRef.current?.scrollToIndex({ index: 0 });
+          flatlistTrnInfRef.current?.scrollToOffset({ offset: 0 });
           break;
         default:
           break;
