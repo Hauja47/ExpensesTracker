@@ -17,7 +17,6 @@ import ActionSheet from "react-native-actions-sheet";
 import NumberFormat from 'react-number-format';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useIsFocused } from '@react-navigation/native';
 
 import { addTransaction, updateTransaction } from '../redux/actions/transactionsAction';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
