@@ -11,6 +11,7 @@ import {
   StyleSheet,
   TouchableHighlight,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ActionSheet from "react-native-actions-sheet";
@@ -20,7 +21,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { addTransaction, updateTransaction } from '../redux/actions/transactionsAction';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
-import { cancel_icon, drop_down_arrow, paragrapgh, wallet, calendar } from '../constants/icons';
+import {
+  cancel_icon,
+  drop_down_arrow,
+  paragrapgh,
+  wallet,
+  calendar,
+  category as categoryIcon
+} from '../constants/icons';
 
 const Tab = createMaterialTopTabNavigator();
 const actionSheetRef = createRef();
@@ -38,6 +46,7 @@ const AddTransaction = ({ route, navigation }) => {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
+  const [height, setHeight] = useState(50);
   const [showDTPicker, setDTPickerVisible] = useState(false);
 
   useEffect(() => {
@@ -153,7 +162,7 @@ const AddTransaction = ({ route, navigation }) => {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: COLORS.white }}>
+    <View style={{ flex: 1, backgroundColor: COLORS.white }}>
       <View style={styles.headerContainer}>
         <View style={styles.navigationBar}>
           <TouchableOpacity
@@ -169,23 +178,6 @@ const AddTransaction = ({ route, navigation }) => {
         </View>
 
         <View style={styles.amountInput}>
-          <TouchableOpacity
-            style={{
-              ...styles.categoryButton,
-              backgroundColor: (category == '') ? COLORS.gray : ((category.type === 'income') ? COLORS.green : COLORS.red),
-            }}
-            onPress={() => {
-              actionSheetRef.current?.setModalVisible();
-            }}
-          >
-            <KeyboardAvoidingView style={styles.innerButton}>
-              <Text style={styles.categoryButtonText}>{(category === '') ? 'Chọn phân loại' : category.name}</Text>
-              <Image
-                source={drop_down_arrow}
-                style={styles.dropDownIcon}
-              />
-            </KeyboardAvoidingView>
-          </TouchableOpacity>
           <Image
             source={wallet}
             style={styles.icon}
@@ -213,39 +205,77 @@ const AddTransaction = ({ route, navigation }) => {
         </View>
       </View>
 
-      <View style={[styles.container, { flex: 1 }]}>
-        <View style={styles.containerTextInput}>
-          <Image
-            source={calendar}
-            style={{ ...styles.icon, alignSelf: 'center', marginRight: 15 }}
-          />
-          <TouchableOpacity
-            onPress={() => { setDTPickerVisible(true) }}
+      <KeyboardAvoidingView
+        style={[styles.container, { flex: 1 }]}
+        behavior='padding'
+        keyboardVerticalOffset={-500}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 15 }}
+        >
+          <View
+            style={[styles.containerTextInput, { alignItems: 'center', justifyContent: 'space-between' }]}
           >
-            <Text style={{ ...FONTS.h2, paddingVertical: 20 }}>{DateTime.fromISO(date.toISOString()).toFormat('DDDD')}</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.containerTextInput}>
-          <Image
-            source={paragrapgh}
-            style={{ ...styles.icon, alignSelf: 'auto', marginTop: 20 }}
-          />
-          <TextInput
-            value={description}
-            style={{
-              ...styles.textInput,
-              height: 150
-            }}
-            onChangeText={(description) => { setDescription(description) }}
-            underlineColorAndroid="transparent"
-            placeholder="Ghi chú"
-            placeholderTextColor={COLORS.darkgray}
-            blurOnSubmit={false}
-            multiline={true}
-            textAlignVertical='top'
-          />
-        </View>
-      </View>
+            <Image
+              source={categoryIcon}
+              style={styles.icon}
+            />
+            <Text style={{ ...FONTS.h2, marginHorizontal: 14 }}>Danh mục:</Text>
+            <TouchableOpacity
+              style={{
+                ...styles.categoryButton,
+                backgroundColor: (category == '') ? COLORS.gray : ((category.type === 'income') ? COLORS.green : COLORS.red),
+              }}
+              onPress={() => {
+                actionSheetRef.current?.setModalVisible();
+              }}
+            >
+              <View style={styles.innerButton}>
+                <Text style={styles.categoryButtonText}>{(category === '') ? 'Chọn phân loại' : category.name}</Text>
+                <Image
+                  source={drop_down_arrow}
+                  style={styles.dropDownIcon}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.containerTextInput}>
+            <Image
+              source={calendar}
+              style={{ ...styles.icon, alignSelf: 'center', marginRight: 15 }}
+            />
+            <TouchableOpacity
+              onPress={() => { setDTPickerVisible(true) }}
+            >
+              <Text style={{ ...FONTS.h2, paddingVertical: 20 }}>{DateTime.fromISO(date.toISOString()).toFormat('DDDD')}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.containerTextInput, { flexWrap: 'wrap' }]}>
+            <Image
+              source={paragrapgh}
+              style={{ ...styles.icon, alignSelf: 'auto', marginTop: 20 }}
+            />
+            <TextInput
+              value={description}
+              style={{
+                ...styles.textInput,
+                height: Math.max(50, height)
+              }}
+              onChangeText={(description) => { setDescription(description) }}
+              onContentSizeChange={(event) => {
+                setHeight(event.nativeEvent.contentSize.height)
+              }}
+              underlineColorAndroid="transparent"
+              placeholder="Ghi chú"
+              placeholderTextColor={COLORS.darkgray}
+              blurOnSubmit={false}
+              multiline={true}
+              textAlignVertical='top'
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <TouchableOpacity
         style={styles.addButton}
         onPress={checkNewTransaction}
@@ -288,7 +318,7 @@ const AddTransaction = ({ route, navigation }) => {
           onChange={onChange}
         />
       )}
-    </KeyboardAvoidingView>
+    </View>
   )
 }
 
@@ -333,13 +363,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   categoryButton: {
-    height: '100%',
+    flex: 1,
+    height: 65,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
     paddingHorizontal: 10,
-    width: '40%'
   },
   categoryButtonText: {
     ...FONTS.h3,
