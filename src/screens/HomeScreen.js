@@ -386,7 +386,6 @@ const HomeScreen = ({ navigation }) => {
     }
 
     let temp = amount.replace(/,/g, '');
-    console.log(temp);
     dispatch(updateAccount({ amount: temp, id: 1 }));
     handleAmountEditButtonVisible();
   }
