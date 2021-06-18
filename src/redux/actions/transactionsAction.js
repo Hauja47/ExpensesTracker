@@ -116,7 +116,7 @@ export const addTransaction = (transaction, navigation) => {
         'INSERT INTO TRANSACTIONS(category_id, amount, description, date) VALUES((SELECT id FROM CATEGORY WHERE name=?), ?, ?, ?);',
         [
           transaction.name,
-          (transaction.type == 'income') ? transaction.amount : -transaction.amount,
+          transaction.amount,
           transaction.description,
           transaction.date,
         ],
