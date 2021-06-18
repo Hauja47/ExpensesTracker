@@ -43,7 +43,7 @@ const AddTransaction = ({ route, navigation }) => {
   const { categories } = useSelector(state => state.categoriesReducer);
 
   const [date, setDate] = useState(new Date());
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState();
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [height, setHeight] = useState(50);
@@ -57,7 +57,7 @@ const AddTransaction = ({ route, navigation }) => {
         type: importData.type
       })
       setDescription(importData.description)
-      setAmount(importData.amount)
+      setAmount((importData.amount < 0) ? -importData.amount : importData.amount)
     }
   }, [])
 
@@ -152,7 +152,7 @@ const AddTransaction = ({ route, navigation }) => {
     let data = {
       id: importData ? importData.id : null,
       name: category.name,
-      amount: amount,
+      amount: category.type == 'income' ? amount : -amount,
       description: description,
       date: DateTime.fromISO(date.toISOString()).toFormat('yyyy-MM-dd'),
       type: category.type
