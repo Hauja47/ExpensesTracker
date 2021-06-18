@@ -8,15 +8,18 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  Animated
+  Animated,
+  Alert
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import NumberFormat from 'react-number-format';
 import MonthPicker from 'react-native-month-year-picker'
 import { ButtonGroup } from 'react-native-elements';
+import Dialog from 'react-native-dialog';
 
+import { updateAccount } from '../redux/actions/accountAction'
 import Chip from './components/Chip'
-import { COLORS, FONTS, SIZES } from '../constants/theme';
+import { COLORS, FONTS } from '../constants/theme';
 import { down_arrow, up_arrow, drop_down_arrow, edit, wallet } from '../constants/icons';
 
 const { DateTime } = require('luxon')
@@ -46,10 +49,14 @@ const transactionType = [
 
 const HomeScreen = ({ navigation }) => {
 
+  const dispatch = useDispatch();
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showMYP, setshowMYP] = useState(false);
   const [date, setDate] = useState(new Date());
   const [selectedCategories, changeCategories] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [amount, setAmount] = useState();
 
   const { categories } = useSelector(state => state.categoriesReducer);
   const { transactions } = useSelector(state => state.transactionsReducer);
@@ -364,6 +371,26 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
+  const handleAmountEditButtonVisible = () => { 
+    setAmount('');
+    setVisible(!visible);
+  }
+
+  const handleAmountChange = () => {
+    if (amount === '') {
+      Alert.alert(
+        'Cảnh báo',
+        'Bạn chưa nhập số tiền'
+      )
+      return;
+    }
+
+    let temp = amount.replace(/,/g, '');
+    console.log(temp);
+    dispatch(updateAccount({ amount: temp, id: 1 }));
+    handleAmountEditButtonVisible();
+  }
+
   return (
     <SafeAreaView style={{
       backgroundColor: COLORS.white,
@@ -414,8 +441,10 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity style={{
           alignItems: 'center',
           justifyContent: 'center',
-          marginRight: 10
-        }}>
+          marginRight: 10,
+        }}
+          onPress={handleAmountEditButtonVisible}
+        >
           <Image
             source={edit}
             style={styles.icon}
@@ -442,6 +471,37 @@ const HomeScreen = ({ navigation }) => {
         style={styles.addTransactionButton}
         onPress={() => navigation.navigate('AddTransaction')}
       />
+
+      <View style={styles.container}>
+        <Dialog.Container visible={visible}>
+          <Dialog.Title style={styles.dialogTittle}>Thay đổi số dư</Dialog.Title>
+          <Dialog.Description style={FONTS.body2}>
+            Nhập số tiền mới:
+          </Dialog.Description>
+          <NumberFormat
+            value={amount}
+            displayType={'text'}
+            thousandSeparator={true}
+            renderText={(value) => (
+              <Dialog.Input
+                underlineColorAndroid={COLORS.blue}
+                placeholder="Số tiền"
+                placeholderTextColor={COLORS.darkgray}
+                returnKeyType='next'
+                onChangeText={(amount) => { setAmount(amount) }}
+                blurOnSubmit={false}
+                keyboardType='number-pad'
+                numberOfLines={1}
+                wrapperStyle={styles.wrapperStyle}
+                style={FONTS.h3}
+                value={value}
+              />
+            )}
+          />
+          <Dialog.Button label="Hủy" onPress={handleAmountEditButtonVisible} />
+          <Dialog.Button label="Thay đổi" onPress={handleAmountChange} />
+        </Dialog.Container>
+      </View>
     </SafeAreaView>
   );
 };
@@ -508,6 +568,18 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     flexDirection: 'row',
     justifyContent: 'space-between'
+  },
+  container: {
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  wrapperStyle: {
+    height: 80,
+  },
+  dialogTittle: {
+    ...FONTS.h3,
+    color: COLORS.darkgray
   }
 })
 
