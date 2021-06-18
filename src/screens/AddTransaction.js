@@ -125,7 +125,7 @@ const AddTransaction = ({ route, navigation }) => {
   const updateToTransaction = (data) => dispatch(updateTransaction(data, importData.date, navigation))
 
   const checkNewTransaction = () => {
-    if (amount === '') {
+    if (amount === '' || amount == 0) {
       Alert.alert(
         importData ? 'Chỉnh sửa giao dịch mới thất bại' : 'Thêm giao dịch mới thất bại',
         'Bạn cần nhập số tiền'
@@ -149,10 +149,11 @@ const AddTransaction = ({ route, navigation }) => {
       return;
     }
 
+    let convertedAmount = (amount.toString().includes(',')) ? amount.replace(/,/g, '') : amount;
     let data = {
       id: importData ? importData.id : null,
       name: category.name,
-      amount: category.type == 'income' ? amount : -amount,
+      amount: category.type == 'income' ? convertedAmount : -convertedAmount,
       description: description,
       date: DateTime.fromISO(date.toISOString()).toFormat('yyyy-MM-dd'),
       type: category.type
@@ -185,7 +186,7 @@ const AddTransaction = ({ route, navigation }) => {
           <NumberFormat
             value={amount}
             displayType={'text'}
-            thousandSeparator={false}
+            thousandSeparator={true}
             renderText={(value) => (
               <TextInput
                 style={styles.textInput}
