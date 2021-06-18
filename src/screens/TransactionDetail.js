@@ -33,7 +33,7 @@ const TransactionDetail = ({ route, navigation }) => {
 
   const dispatch = useDispatch();
 
-  const data = transactions.find(transaction => transaction.data.find(item => item.id == route.params.id))?.data[0]
+  const data = transactions.find(transaction => transaction.data.find(item => item.id === route.params.id))?.data.find(data => data.id === route.params.id);
   const date = (data) ?
     DateTime.fromISO((new Date(data?.date)).toISOString()).setLocale('vi') :
     date;
