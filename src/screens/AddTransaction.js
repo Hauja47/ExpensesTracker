@@ -43,7 +43,7 @@ const AddTransaction = ({ route, navigation }) => {
   const { categories } = useSelector(state => state.categoriesReducer);
 
   const [date, setDate] = useState(new Date());
-  const [amount, setAmount] = useState();
+  const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [height, setHeight] = useState(50);
@@ -125,7 +125,7 @@ const AddTransaction = ({ route, navigation }) => {
   const updateToTransaction = (data) => dispatch(updateTransaction(data, importData.date, navigation))
 
   const checkNewTransaction = () => {
-    if (amount === '' || amount == 0) {
+    if (!amount || amount == 0) {
       Alert.alert(
         importData ? 'Chỉnh sửa giao dịch mới thất bại' : 'Thêm giao dịch mới thất bại',
         'Bạn cần nhập số tiền'
@@ -133,7 +133,7 @@ const AddTransaction = ({ route, navigation }) => {
       return;
     }
 
-    if (description === '') {
+    if (!description) {
       Alert.alert(
         importData ? 'Chỉnh sửa giao dịch mới thất bại' : 'Thêm giao dịch mới thất bại',
         'Bạn nên nhập ghi chú'
@@ -141,7 +141,7 @@ const AddTransaction = ({ route, navigation }) => {
       return;
     }
 
-    if (category === '') {
+    if (!category) {
       Alert.alert(
         importData ? 'Chỉnh sửa giao dịch mới thất bại' : 'Thêm giao dịch mới thất bại',
         'Bạn nên chọn phân loại'
