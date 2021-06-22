@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextInput,
   View,
@@ -12,6 +12,7 @@ import {
   Alert
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useIsFocused } from '@react-navigation/native';
 
 import { COLORS, SIZES, FONTS } from '../constants/theme';
 import {
@@ -20,7 +21,7 @@ import {
   down_arrow,
   up_arrow
 } from '../constants/icons'
-import { addCategory } from '../redux/actions/categoriesAction';
+import { addCategory, updateCategory } from '../redux/actions/categoriesAction';
 
 const transactionType = [
   {
@@ -33,17 +34,34 @@ const transactionType = [
   }
 ]
 
-const AddCategory = ({ navigation }) => {
+const AddCategory = ({ route, navigation }) => {
 
+  const isFocused = useIsFocused();
   const { categories } = useSelector(state => state.categoriesReducer);
 
   const dispatch = useDispatch();
   const addToCategories = (category) => dispatch(addCategory(navigation, category))
+  const updateToCategories = (category) => dispatch(updateCategory(navigation, category))
 
   const [isIncomePressed, setIncomePressed] = useState(false);
   const [isExpensePressed, setExpensePressed] = useState(false);
   const [name, setName] = useState('');
   const [type, setType] = useState(null)
+
+  const importData = categories.find(category => category.name === route.params) ?
+    categories.find(category => category.name === route.params) : {
+      id: 'none',
+      name: 'none',
+      type: "none"
+    }
+
+  useEffect(() => {
+    if (route.params) {
+      setType(importData.type)
+      setName(importData.name)
+      importData.type == 'income' ? setIncomePressed(true) : setExpensePressed(true)
+    }
+  }, [isFocused])
 
   const addNewCategory = () => {
     if (name === '') {
@@ -73,10 +91,7 @@ const AddCategory = ({ navigation }) => {
       }
     }
 
-    addToCategories({
-      name: name,
-      type: type
-    })
+    importData ? updateToCategories({ id: importData.id, name: name, type: type }) : addToCategories({ name: name, type: type })
   }
 
   return (
@@ -111,6 +126,7 @@ const AddCategory = ({ navigation }) => {
             blurOnSubmit={false}
             multiline={true}
             textAlignVertical='top'
+            value={name}
           />
         </View>
       </View>
