@@ -9,6 +9,8 @@ export const category = require('../assets/icons/menu.png')
 export const edit = require('../assets/icons/edit.png')
 export const delete_icon = require('../assets/icons/delete.png')
 export const back = require('../assets/icons/left-arrow.png')
+export const detail = require('../assets/icons/detail.png')
+export const plus = require('../assets/icons/plus.png')
 
 export default {
     down_arrow,
@@ -21,5 +23,7 @@ export default {
     category,
     edit,
     delete_icon,
-    back
+    back,
+    detail,
+    plus
 }
