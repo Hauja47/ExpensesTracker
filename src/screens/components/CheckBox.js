@@ -16,7 +16,7 @@ const MyCheckBox = (props) => {
 
     const handlePress = () => {
         setCheck(!checked);
-        props.onPress(props.title);
+        props.onPress(props.id);
     }
 
     return (

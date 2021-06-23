@@ -41,27 +41,25 @@ const CategoriesTab = ({ navigation }) => {
     </View>
   )
 
-  const handleCheck = (title) => {
-    if (selectedCategories.includes(title)) {
-      let temp = selectedCategories.filter(category => category != title)
+  const handleCheck = (key) => {
+    if (selectedCategories.includes(key)) {
+      let temp = selectedCategories.filter(id => id != key)
       setSelected(temp)
     } else {
-      setSelected([...selectedCategories, title])
+      setSelected([...selectedCategories, key])
     }
   }
 
   const renderCategoriesItem = ({ item }) => (
     <CheckBox
       title={item.name}
-      key={item.id}
+      id={item.id}
       onPress={handleCheck}
     />
     // <Text key={item.id} style={{padding: 10, ...FONTS.body2}}>{item.name}</Text>
   )
 
   const renderContent = (section) => {
-    console.log(categories);
-
     return (
       <FlatList
         data={categories?.filter(item => item.type === section.type)}

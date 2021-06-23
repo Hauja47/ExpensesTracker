@@ -48,18 +48,13 @@ const AddCategory = ({ route, navigation }) => {
   const [name, setName] = useState('');
   const [type, setType] = useState(null)
 
-  const importData = categories.find(category => category.name === route.params) ?
-    categories.find(category => category.name === route.params) : {
-      id: 'none',
-      name: 'none',
-      type: "none"
-    }
+  const importData = categories.find(category => category.id === route.params)
 
   useEffect(() => {
     if (route.params) {
-      setType(importData.type)
-      setName(importData.name)
-      importData.type == 'income' ? setIncomePressed(true) : setExpensePressed(true)
+      setType(importData?.type)
+      setName(importData?.name)
+      importData?.type == 'income' ? setIncomePressed(true) : setExpensePressed(true)
     }
   }, [isFocused])
 
@@ -80,18 +75,22 @@ const AddCategory = ({ route, navigation }) => {
       return;
     }
 
-    let find = categories.find(category => category.name === name)
+    let find = categories.filter(category => category.name === name)
     if (find) {
-      if (find.name === name && find.type === type) {
-        Alert.alert(
-          'Thêm danh mục mới thất bại',
-          'Danh mục này đã tồn tại'
-        )
-        return;
-      }
+      find.forEach(element => {
+        if (element.name === name && element.type === type) {
+          Alert.alert(
+            'Thêm danh mục mới thất bại',
+            'Danh mục này đã tồn tại'
+          )
+          return;
+        }
+      });
     }
 
-    importData ? updateToCategories({ id: importData.id, name: name, type: type }) : addToCategories({ name: name, type: type })
+    importData ?
+      updateToCategories({ id: importData.id, name: name, type: type }) :
+      addToCategories({ name: name, type: type })
   }
 
   return (
@@ -107,7 +106,7 @@ const AddCategory = ({ route, navigation }) => {
               style={styles.cancelIcon}
             />
           </TouchableOpacity>
-          <Text style={styles.header}>Thêm Phân loại</Text>
+          <Text style={styles.header}>{importData ? 'Chỉnh sửa' : 'Thêm'} Phân loại</Text>
         </View>
         <View style={styles.containerTextInput}>
           <Image
@@ -196,7 +195,7 @@ const AddCategory = ({ route, navigation }) => {
           style={styles.addButton}
           onPress={addNewCategory}
         >
-          <Text style={styles.addButtonText}>Thêm</Text>
+          <Text style={styles.addButtonText}>{importData ? 'Chỉnh sửa' : 'Thêm'}</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
