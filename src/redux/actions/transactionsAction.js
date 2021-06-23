@@ -21,7 +21,6 @@ const createTRANSACTIONS = () => {
       "SELECT name FROM sqlite_master WHERE type='table' AND name='TRANSACTIONS'",
       [],
       (tx, res) => {
-        // console.log('TRANSACTIONS\'s is:', res.rows.length);
         if (res.rows.length == 0) {
           txn.executeSql(
             'DROP TABLE IF EXISTS TRANSACTIONS',
@@ -32,6 +31,13 @@ const createTRANSACTIONS = () => {
 
           txn.executeSql(
             'CREATE TABLE TRANSACTIONS ( id INTEGER PRIMARY KEY AUTOINCREMENT, category_id INTERGER NOT NULL, description TEXT NOT NULL, date text NOT NULL, amount INTERGER NOT NULL, FOREIGN KEY (category_id) REFERENCES CATEGORY(id) )',
+            [],
+            {},
+            (err) => console.error(err)
+          );
+
+          txn.executeSql(
+            'CREATE TRIGGER update_category_type AFTER UPDATE ON CATEGORY WHEN old.type!=new.type BEGIN UPDATE TRANSACTIONS SET amount=-amount WHERE category_id=new.id; END;',
             [],
             {},
             (err) => console.error(err)
@@ -88,7 +94,7 @@ export const getTransactions = () => {
   return dispatch => {
     db.transaction(function (txn) {
       txn.executeSql(
-        "SELECT TRANSACTIONS.id, name, description, date, type, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id;",
+        "SELECT TRANSACTIONS.id, name, description, date, type, category_id, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id;",
         [],
         function (tx, res) {
           let transacItem = convertData(res.rows.raw())
