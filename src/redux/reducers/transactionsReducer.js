@@ -1,4 +1,3 @@
-import { getAccount } from '../actions/accountAction';
 import { ADD_TRANSACTION, DELETE_TRANSACTION, GET_TRANSACTIONS, UPDATE_TRANSACTION } from '../actions/actions';
 const { DateTime } = require('luxon')
 
