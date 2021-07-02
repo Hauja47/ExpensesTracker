@@ -32,8 +32,7 @@ const createCATEGORY = () => {
               'Ăn uống', 'expense',
               'Mua sắm', 'expense',
               'Di chuyển', 'expense',
-              'Giải trí', 'expense',
-              'Khác', 'expense'
+              'Giải trí', 'expense'
             ]
           );
           txn.executeSql(
@@ -41,8 +40,7 @@ const createCATEGORY = () => {
             [
               'Tiền lương', 'income',
               'Tiền thưởng', 'income',
-              'Cổ tức', 'income',
-              'Khác', 'income'
+              'Cổ tức', 'income'
             ]
           );
         }
