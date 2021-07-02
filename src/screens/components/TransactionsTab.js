@@ -537,8 +537,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     position: 'absolute',
     backgroundColor: COLORS.blue,
-    bottom: 0,
-    left: 20,
+    bottom: 10,
+    right: 20,
     alignItems: 'center',
     justifyContent: 'center'
   },

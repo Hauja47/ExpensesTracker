@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import { useSelector } from 'react-redux';
+import { useIsFocused } from '@react-navigation/core';
 
 import CheckBox from './CheckBox';
 import { COLORS, FONTS } from '../../constants/theme';
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     position: 'absolute',
     backgroundColor: COLORS.blue,
-    bottom: 0,
+    bottom: 10,
     right: 20,
     alignItems: 'center',
     justifyContent: 'center'
