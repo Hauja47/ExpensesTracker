@@ -24,7 +24,7 @@ const createCATEGORY = () => {
             []
           );
           txn.executeSql(
-            'INSERT INTO CATEGORY(name, type) VALUES (?, ?), (?, ?), (?, ?), (?, ?), (?, ?), (?, ?), (?, ?), (?, ?);',
+            'INSERT INTO CATEGORY(name, type) VALUES (?, ?), (?, ?), (?, ?), (?, ?), (?, ?), (?, ?), (?, ?);',
             [
               'Giáo dục', 'expense',
               'Hóa đơn', 'expense',
@@ -36,7 +36,7 @@ const createCATEGORY = () => {
             ]
           );
           txn.executeSql(
-            'INSERT INTO CATEGORY(name, type) VALUES (?, ?), (?, ?), (?, ?), (?, ?);',
+            'INSERT INTO CATEGORY(name, type) VALUES (?, ?), (?, ?), (?, ?);',
             [
               'Tiền lương', 'income',
               'Tiền thưởng', 'income',
