@@ -160,7 +160,7 @@ const AddCategory = ({ route, navigation }) => {
               if (isIncomePressed === true) {
                 setIncomePressed(!isIncomePressed);
               }
-              setType('expense')
+              setType(type == 'expense' ? null : 'expense')
             }}
           >
             <View style={{ flexDirection: 'row' }}>
@@ -189,7 +189,7 @@ const AddCategory = ({ route, navigation }) => {
               if (isExpensePressed === true) {
                 setExpensePressed(!isExpensePressed);
               }
-              setType('income')
+              setType(type == 'income' ? null : 'income')
             }}
           >
             <View style={{ flexDirection: 'row' }}>
