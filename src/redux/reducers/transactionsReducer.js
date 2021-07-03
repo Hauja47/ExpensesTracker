@@ -1,4 +1,4 @@
-import { ADD_TRANSACTION, DELETE_TRANSACTION, GET_TRANSACTIONS, UPDATE_TRANSACTION } from '../actions/actions';
+import { ADD_TRANSACTION, DELETE_TRANSACTION, GET_TRANSACTIONS, UPDATE_TRANSACTION, UPDATE_TRANSACTION_AFTER_CATEGORY_CHANGE } from '../actions/actions';
 const { DateTime } = require('luxon')
 
 const initialState = {
@@ -43,22 +43,10 @@ const deleteItem = (array, data) => {
 
 const updateItem = (array, data, oldDate) => {
     array = deleteItem(array, {
-        id: data.id,
-        name: data.name,
-        date: oldDate,
-        amount: data.amount,
-        description: data.description,
-        type: data.type,
+        ...data,
+        date: oldDate
     })
-
-    array = addItem(array, {
-        id: data.id,
-        name: data.name,
-        date: data.date,
-        amount: data.amount,
-        description: data.description,
-        type: data.type,
-    })
+    array = addItem(array, data)
 
     array.sort((a, b) =>
         DateTime.fromFormat(a.date, 'yyyy-MM-dd').toMillis() <
@@ -66,6 +54,19 @@ const updateItem = (array, data, oldDate) => {
     )
 
     return array;
+}
+
+const updateCategory = (array, category, isTypeChanged) => {
+    return array.map(i => ({
+        ...i,
+        data: i.data.map(tx => 
+            tx = tx.category_id == category.id ? {
+                ...tx,
+                name: category.name,
+                type: category.type,
+                amount: isTypeChanged ? -tx.amount : tx.amount
+            } : tx)
+    }))
 }
 
 const categoriesReducer = (state = initialState, action) => {
@@ -91,6 +92,21 @@ const categoriesReducer = (state = initialState, action) => {
                 ...state,
                 transactions: updateItem(state.transactions, action.payload, action.payload.old_date)
             };
+        case UPDATE_TRANSACTION_AFTER_CATEGORY_CHANGE:
+            // state.transactions = updateCategory(state.transactions, action.payload, action.payload.isTypeChanged)
+            return {
+                ...state,
+                // transactions: state.transactions.map(item => ({
+                //     ...item,
+                //     data: item.data.map(data => data.category_id == action.payload.id ? ({
+                //         ...data,
+                //         name: action.payload.name,
+                //         type: action.payload.type,
+                //         amount: action.payload.isTypeChanged ? -data.amount : data.amount
+                //     }) : data)
+                // }))
+                transactions: updateCategory(state.transactions, action.payload, action.payload.isTypeChanged)
+            }
         default:
             return state;
     }

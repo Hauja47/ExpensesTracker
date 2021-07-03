@@ -4,6 +4,7 @@ import {
   GET_TRANSACTIONS,
   DELETE_TRANSACTION,
   UPDATE_TRANSACTION,
+  UPDATE_TRANSACTION_AFTER_CATEGORY_CHANGE,
 } from './actions';
 import {
   Alert
@@ -129,7 +130,7 @@ export const addTransaction = (transaction, navigation) => {
         (tx, res) => {
           if (res.rowsAffected === 1) {
             txn.executeSql(
-              'SELECT TRANSACTIONS.id, name, description, date, type, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id WHERE category_id=(SELECT id FROM CATEGORY WHERE name=?) and amount=? and description=? and date=?;',
+              'SELECT TRANSACTIONS.id, name, description, date, type, category_id, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id WHERE category_id=(SELECT id FROM CATEGORY WHERE name=?) and amount=? and description=? and date=?;',
               [
                 transaction.name,
                 transaction.amount,
@@ -250,4 +251,14 @@ export const updateTransaction = (data, oldDate, navigation) => {
       )
     }, (err) => console.error(err.message))
   }
+}
+
+export const updateTransactionAfterCategoryChanged = (category, isTypeChanged) => dispatch => {
+  dispatch({
+    type: UPDATE_TRANSACTION_AFTER_CATEGORY_CHANGE,
+    payload: {
+      ...category,
+      isTypeChanged
+    }
+  })
 }

@@ -2,11 +2,11 @@ import 'react-native-gesture-handler';
 import { ADD_CATEGORIES, GET_CATEGORIES, UPDATE_CATEGORIES } from './actions';
 import {
   Alert,
-  ToastAndroid
 } from 'react-native'
 
 import { openDatabase } from 'react-native-sqlite-storage';
 import { getAccount } from './accountAction';
+import { updateTransactionAfterCategoryChanged } from './transactionsAction';
 const db = openDatabase({ name: 'fiance.db' });
 
 const createCATEGORY = () => {
@@ -112,7 +112,7 @@ export const addCategory = (navigation, category) => {
   }
 }
 
-export const updateCategory = (navigation, category) => {
+export const updateCategory = (navigation, category, isTypeChanged) => {
   return dispatch => {
     db.transaction((txn) => {
       txn.executeSql(
@@ -130,7 +130,10 @@ export const updateCategory = (navigation, category) => {
                   'Thành công',
                   'Chỉnh sửa danh mục thành công',
                   [
-                    { text: 'OK', onPress: () => { navigation.goBack() } },
+                    { text: 'OK', onPress: () => { 
+                      navigation.goBack() 
+                      dispatch(updateTransactionAfterCategoryChanged(temp, isTypeChanged))
+                    } },
                   ],
                   { cancelable: false }
                 )

@@ -41,7 +41,7 @@ const AddCategory = ({ route, navigation }) => {
 
   const dispatch = useDispatch();
   const addToCategories = (category) => dispatch(addCategory(navigation, category))
-  const updateToCategories = (category) => dispatch(updateCategory(navigation, category))
+  const updateToCategories = (category, isTypeChanged = false) => dispatch(updateCategory(navigation, category, isTypeChanged))
 
   const [isIncomePressed, setIncomePressed] = useState(false);
   const [isExpensePressed, setExpensePressed] = useState(false);
@@ -75,22 +75,35 @@ const AddCategory = ({ route, navigation }) => {
       return;
     }
 
-    let find = categories.filter(category => category.name === name)
-    if (find) {
-      find.forEach(element => {
-        if (element.name === name && element.type === type) {
-          Alert.alert(
-            'Thêm danh mục mới thất bại',
-            'Danh mục này đã tồn tại'
-          )
-          return;
-        }
-      });
+    // let find = categories.filter(category => category.name === name && category.type == type)
+    // if (find) {
+    //   find.forEach(element => {
+    //     if (element.name === name && element.type === type) {
+    //       Alert.alert(
+    //         'Thêm danh mục mới thất bại',
+    //         'Danh mục này đã tồn tại'
+    //       )
+    //       return;
+    //     }
+    //   });
+    // }
+    if (categories.some(category => category.name === name && category.type == type)) {
+      Alert.alert(
+        'Thêm danh mục mới thất bại',
+        'Danh mục này đã tồn tại'
+      )
+      return;
     }
 
     importData ?
-      updateToCategories({ id: importData.id, name: name, type: type }) :
-      addToCategories({ name: name, type: type })
+      updateToCategories({
+        id: importData.id,
+        name: name,
+        type: type
+      }, type != importData.type) : addToCategories({
+        name: name,
+        type: type
+      })
   }
 
   return (
