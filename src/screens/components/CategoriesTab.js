@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import { useSelector } from 'react-redux';
-import { useIsFocused } from '@react-navigation/core';
 
 import CheckBox from './CheckBox';
 import { COLORS, FONTS } from '../../constants/theme';
@@ -57,7 +56,6 @@ const CategoriesTab = ({ navigation }) => {
       id={item.id}
       onPress={handleCheck}
     />
-    // <Text key={item.id} style={{padding: 10, ...FONTS.body2}}>{item.name}</Text>
   )
 
   const renderContent = (section) => {

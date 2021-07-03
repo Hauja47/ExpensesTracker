@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -70,14 +70,6 @@ const TransactionsTab = ({ navigation }) => {
 
   const categoryListHeightAnimationValue = useRef(new Animated.Value(0)).current;
   const flatlistTrnInfRef = useRef();
-
-  // useEffect(() => {
-  //   transactions.forEach(element => {
-  //     element.data.forEach(item => {
-  //       item.name = categories.find(data => data.category_id === categories.id).name
-  //     })
-  //   });
-  // }, [categories])
 
   const renderMonthYearPicker = () => {
     const onValueChange = React.useCallback(
