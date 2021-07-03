@@ -187,6 +187,8 @@ const AddTransaction = ({ route, navigation }) => {
             value={amount}
             displayType={'text'}
             thousandSeparator={true}
+            allowNegative={false}
+            allowLeadingZeros={false}
             renderText={(value) => (
               <TextInput
                 style={styles.textInput}
@@ -196,7 +198,7 @@ const AddTransaction = ({ route, navigation }) => {
                 returnKeyType='next'
                 onChangeText={(amount) => { setAmount(amount) }}
                 blurOnSubmit={false}
-                keyboardType='number-pad'
+                keyboardType='decimal-pad'
                 value={value}
                 numberOfLines={1}
               />

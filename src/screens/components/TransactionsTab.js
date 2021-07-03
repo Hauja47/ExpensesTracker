@@ -488,15 +488,23 @@ const TransactionsTab = ({ navigation }) => {
             value={newAmount}
             displayType={'text'}
             thousandSeparator={true}
+            allowNegative={false}
+            allowLeadingZeros={false}
             renderText={(value) => (
               <Dialog.Input
                 underlineColorAndroid={COLORS.blue}
                 placeholder="Số tiền"
                 placeholderTextColor={COLORS.darkgray}
                 returnKeyType='next'
-                onChangeText={(amount) => { setAmount(amount) }}
+                onChangeText={(amount) => { 
+                  console.log(amount[0] == 0)
+                  if (amount[0] == 0) {
+                    amount = amount.replace("0", "")
+                  }
+                  setAmount(amount) 
+                }}
                 blurOnSubmit={false}
-                keyboardType='number-pad'
+                keyboardType='decimal-pad'
                 numberOfLines={1}
                 wrapperStyle={styles.wrapperStyle}
                 style={FONTS.h3}
