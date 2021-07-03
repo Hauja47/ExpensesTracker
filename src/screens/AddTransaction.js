@@ -189,6 +189,7 @@ const AddTransaction = ({ route, navigation }) => {
             thousandSeparator={true}
             allowNegative={false}
             allowLeadingZeros={false}
+            format={new RegExp("^[0-9]*$")}
             renderText={(value) => (
               <TextInput
                 style={styles.textInput}
@@ -196,7 +197,10 @@ const AddTransaction = ({ route, navigation }) => {
                 placeholder="Số tiền"
                 placeholderTextColor={COLORS.darkgray}
                 returnKeyType='next'
-                onChangeText={(amount) => { setAmount(amount) }}
+                onChangeText={(amount) => { 
+                  amount.replace(new RegExp("^0+(?!$)",'g'), "")
+                  setAmount(amount) 
+                }}
                 blurOnSubmit={false}
                 keyboardType='decimal-pad'
                 value={value}

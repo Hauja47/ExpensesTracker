@@ -490,6 +490,7 @@ const TransactionsTab = ({ navigation }) => {
             thousandSeparator={true}
             allowNegative={false}
             allowLeadingZeros={false}
+            format={new RegExp("^[0-9]*$")}
             renderText={(value) => (
               <Dialog.Input
                 underlineColorAndroid={COLORS.blue}
@@ -497,10 +498,7 @@ const TransactionsTab = ({ navigation }) => {
                 placeholderTextColor={COLORS.darkgray}
                 returnKeyType='next'
                 onChangeText={(amount) => { 
-                  console.log(amount[0] == 0)
-                  if (amount[0] == 0) {
-                    amount = amount.replace("0", "")
-                  }
+                  amount.replace(new RegExp("^0+(?!$)",'g'), "")
                   setAmount(amount) 
                 }}
                 blurOnSubmit={false}
