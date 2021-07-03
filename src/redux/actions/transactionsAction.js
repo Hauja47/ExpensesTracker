@@ -130,7 +130,7 @@ export const addTransaction = (transaction, navigation) => {
         (tx, res) => {
           if (res.rowsAffected === 1) {
             txn.executeSql(
-              'SELECT TRANSACTIONS.id, name, description, date, type, category_id, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id WHERE category_id=(SELECT id FROM CATEGORY WHERE name=?) and amount=? and description=? and date=?;',
+              'SELECT TRANSACTIONS.id, name, description, date, type, category_id, amount FROM TRANSACTIONS JOIN CATEGORY ON CATEGORY.id = TRANSACTIONS.category_id WHERE category_id=(SELECT id FROM CATEGORY WHERE name=?) and amount=? and description=? and date=? ORDER BY TRANSACTIONS.id DESC LIMIT 1;',
               [
                 transaction.name,
                 transaction.amount,
