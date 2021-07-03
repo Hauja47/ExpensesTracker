@@ -202,7 +202,7 @@ const TransactionsTab = ({ navigation }) => {
       }).map((data) => {
         return data.amount;
       }).reduce((acc, curValue) => {
-        return acc + curValue;
+        return parseInt(acc) + parseInt(curValue);
       }, 0)
 
       return sum;
