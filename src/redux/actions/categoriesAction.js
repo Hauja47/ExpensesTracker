@@ -6,6 +6,7 @@ import {
 } from 'react-native'
 
 import { openDatabase } from 'react-native-sqlite-storage';
+import { getAccount } from './accountAction';
 const db = openDatabase({ name: 'fiance.db' });
 
 const createCATEGORY = () => {
@@ -134,10 +135,7 @@ export const updateCategory = (navigation, category) => {
                   { cancelable: false }
                 )
 
-                ToastAndroid.show(
-                  'Thay đổi có hiệu lực sau khi khởi động lại ứng dụng',
-                  ToastAndroid.SHORT,
-                )
+                dispatch(getAccount());
 
                 dispatch({
                   type: UPDATE_CATEGORIES,
@@ -167,7 +165,7 @@ export const deleteCategory = (id) => {
           if (results.rowsAffected === 1) {
 
             dispatch({
-              type: UPDATE_CATEGORIES,
+              type: DELETE_CATEGORIES,
               payload: id
             })
           } else {
