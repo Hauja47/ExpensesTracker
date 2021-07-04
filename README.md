@@ -16,23 +16,23 @@
 
 ### Xem các danh sách chi tiêu
 
-<img src=".\image\Screenshot_1625370715.png" alt="Screenshot_1625370715" style="zoom:25%;" />
+<img src=".\image\Screenshot_1625370715.png" alt="Screenshot_1625370715" style="zoom:10%;" />
 
 ### Xem danh sách phân loại
 
-<img src=".\image\Screenshot_1625370776.png" alt="Screenshot_1625370776" style="zoom: 25%;" />
+<img src=".\image\Screenshot_1625370776.png" alt="Screenshot_1625370776" style="zoom:10%;" />
 
 ### Xem chi tiết chi tiêu
 
-<img src=".\image\Screenshot_1625370942.png" alt="Screenshot_1625370942" style="zoom:25%;" /><img src=".\image\Screenshot_1625370873.png" alt="Screenshot_1625370873" style="zoom:25%;" />
+<img src=".\image\Screenshot_1625370942.png" alt="Screenshot_1625370942" style="zoom:10%;" /><img src=".\image\Screenshot_1625370873.png" alt="Screenshot_1625370873" style="zoom:10%;" />
 
 ### Thêm/sửa chi tiêu
 
-<img src=".\image\Screenshot_1625371075.png" alt="Screenshot_1625371075" style="zoom:25%;" /><img src=".\image\Screenshot_1625371083.png" alt="Screenshot_1625371083" style="zoom:25%;" />
+<img src=".\image\Screenshot_1625371075.png" alt="Screenshot_1625371075" style="zoom:10%;" /><img src=".\image\Screenshot_1625371083.png" alt="Screenshot_1625371083" style="zoom:10%;" />
 
 ### Thêm/sửa phân loại
 
-<img src=".\image\Screenshot_1625371202.png" alt="Screenshot_1625371202" style="zoom:25%;" /><img src=".\image\Screenshot_1625371213.png" alt="Screenshot_1625371213" style="zoom:25%;" />
+<img src=".\image\Screenshot_1625371202.png" alt="Screenshot_1625371202" style="zoom:10%;" /><img src=".\image\Screenshot_1625371213.png" alt="Screenshot_1625371213" style="zoom:10%;" />
 
 ## Thư viện và công nghệ
 
