@@ -24,11 +24,11 @@
 
 ### Xem chi tiết chi tiêu
 
-<img src=".\image\Screenshot_1625370942.png" alt="Screenshot_1625370942" height = "480" width="270"" /><img src=".\image\Screenshot_1625370873.png" alt="Screenshot_1625370873" height = "480" width="270" />
+<img src=".\image\Screenshot_1625370942.png" alt="Screenshot_1625370942" height = "480" width="270" /><img src=".\image\Screenshot_1625370873.png" alt="Screenshot_1625370873" height = "480" width="270" />
 
 ### Thêm/sửa chi tiêu
 
-<img src=".\image\Screenshot_1625371075.png" alt="Screenshot_1625371075" height = "480" width="270" /><img src=".\image\Screenshot_1625371083.png" alt="Screenshot_1625371083" style=" height = "480" width="270" />
+<img src=".\image\Screenshot_1625371075.png" alt="Screenshot_1625371075" height = "480" width="270" /><img src=".\image\Screenshot_1625371083.png" alt="Screenshot_1625371083" height = "480" width="270" />
 
 ### Thêm/sửa phân loại
 
