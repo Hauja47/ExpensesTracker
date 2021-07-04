@@ -1,37 +1,91 @@
-// Example: Example of SQLite Database in React Native
-// https://aboutreact.com/example-of-sqlite-database-in-react-native
 import 'react-native-gesture-handler';
 
 import * as React from 'react';
-import { Button, View, Text } from 'react-native';
-import { openDatabase } from 'react-native-sqlite-storage'
-
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack'
+import { Provider } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCategories, getTransactions, getAccount } from './src/redux/actions'
 
-import HomeScreen from './src/screens/HomeScreen';
-import ViewAllUser from './src/screens/ViewAllUser';
+import { store } from './src/redux/store';
+import {
+  HomeScreen,
+  TransactionDetail,
+  AddTransaction,
+  AddCategory,
+  SplashScreen
+} from './src/screens/';
 
 const Stack = createStackNavigator();
+const AppStack = createStackNavigator();
 
-var db = openDatabase({ name: 'fiance.db' });
+const AppWrapper = () => {
+  return (
+    <Provider store={store}>
+      <App />
+    </Provider>
+  )
+}
 
 const App = () => {
+
+  const dispatch = useDispatch();
+  const { isCategoriesLoaded } = useSelector(state => state.categoriesReducer)
+  const { isTransactionsLoaded } = useSelector(state => state.transactionsReducer)
+  const { isAccountLoaded } = useSelector(state => state.accountReducer)
+
+  React.useEffect(() => {
+    dispatch(getCategories());
+    dispatch(getTransactions());   
+    dispatch(getAccount());
+  }, [])
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeScreen">
+      {(!(isCategoriesLoaded && isTransactionsLoaded && isAccountLoaded)) ? (
+        <Stack.Navigator
+          initialRouteName='SplashScreen'
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
+          />
+        </Stack.Navigator>
+      ) : (
+        <AppStack.Navigator
+          initialRouteName='HomeScreen'
+          screenOptions={{ headerShown: false }}
+        >
+          <AppStack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+          />
+          <AppStack.Screen
+            name="TransactionDetail"
+            component={TransactionDetail}
+          />
+          <AppStack.Screen
+            name="AddTransaction"
+            component={AddTransaction}
+          />
+          <AppStack.Screen
+            name="AddCategory"
+            component={AddCategory}
+          />
+        </AppStack.Navigator>
+      )}
+      {/* <Stack.Navigator
+        initialRouteName='SplashScreen'
+        screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen
-          name="HomeScreen"
-          component={HomeScreen}
-          options={{ headerShown: false }}
+          name="SplashScreen"
+          component={SplashScreen}
         />
-        <Stack.Screen
-          name="ViewAll"
-          component={ViewAllUser}
-        />
-      </Stack.Navigator>
+      </Stack.Navigator> */}
     </NavigationContainer>
-  );
-};
+  )
+}
 
-export default App;
+export default AppWrapper;

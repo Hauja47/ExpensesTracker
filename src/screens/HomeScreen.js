@@ -1,137 +1,96 @@
-import React, { useEffect } from 'react';
+import 'react-native-gesture-handler';
+import React from 'react';
 import {
   View,
-  Text,
-  SafeAreaView,
   StyleSheet,
-  FlatList,
-  TouchableOpacity,
+  Image
 } from 'react-native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import Mybutton from './components/Mybutton';
-import Mytext from './components/Mytext';
+import { detail, category } from '../constants/icons'
+import TransactionsTab from './components/TransactionsTab'
+import CategoriesTab from './components/CategoriesTab'
+import { COLORS } from '../constants/theme';
 
-import { openDatabase } from 'react-native-sqlite-storage';
-import { COLORS, FONTS, SIZES } from '../constants/theme';
-
-var db = openDatabase({ name: 'fiance.db' });
+const Tab = createMaterialTopTabNavigator();
 
 const HomeScreen = ({ navigation }) => {
-  useEffect(() => {
-    // Create and insert data into CATEGORY table
-    db.transaction(function (txn) {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='CATEGORY'",
-        [],
-        function (tx, res) {
-          console.log('item:', res.rows.length);
-          if (res.rows.length == 0) {
-            txn.executeSql('DROP TABLE IF EXISTS CATEGORY', []);
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS CATEGORY( id INTEGER PRIMARY KEY AUTOINCREMENT, name text NOT NULL UNIQUE);',
-              []
-            );
-            txn.executeSql(
-              'INSERT INTO CATEGORY(name) VALUES (?), (?), (?), (?);',
-              ['Giáo dục', 'Sức khỏe', 'Ăn uống', 'Mua sắm']
-            );
-          }
-        }
-      );
-    });
-  }, []);
-
-  const transactionType = [
-    {
-      id: 1,
-      name: 'Chi tiêu'
-    },
-    {
-      id: 2,
-      name: 'Thu nhập'
-    }
-  ]
-
   return (
-    <SafeAreaView style={{
-      paddingHorizontal: 20,
-      paddingVertical: 27,
-      alignItems: 'center',
-      backgroundColor: COLORS.white,
-      flex: 1,
-    }}>
-      <View style={{
-        ...styles.container,
-        ...styles.shadow,
-        backgroundColor: COLORS.white,
-        height: 250,
-      }}>
-        <View>
-          <Text style={{ ...FONTS.body3, color: COLORS.darkgray }}>Số dư</Text>
-          <Text style={{ ...FONTS.h1, color: COLORS.primary }}>100.000.000 đ</Text>
-          <FlatList
-            data={transactionType}
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity
-                  style={{
-                    flexDirection: 'row',
-                    height: 40,
-                    paddingHorizontal: SIZES.radius,
-                    borderRadius: 10,
-                  }} >
-                  {/* Name/Category */}
-                  <View View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: 5
-                      }}
-                    />
-                    <Text style={{ ...FONTS.body3, color: COLORS.darkgray }}>{item.name}</Text>
-                  </View>
-                  {/* Expenses */}
-                  <View style={{ justifyContent: 'center' }}>
-                    <Text style={{ ...FONTS.h3 }}>1000</Text>
-                  </View>
-                </TouchableOpacity>
-              )
-            }}
-          keyExtractor={item => item.id}
-          />
-        </View>
-      </View >
-      <Mybutton
-        title="View All"
-        customClick={() => navigation.navigate('ViewAll')}
+    <Tab.Navigator
+      style={{ backgroundColor: 'white' }}
+      tabBarPosition='bottom'
+      tabBarOptions={{
+        style: {
+          elevation: 3,
+          backgroundColor: COLORS.lightGray2,
+          borderRadius: 25,
+          height: 50,
+          justifyContent: 'center',
+          margin: 10,
+          ...styles.shadow,
+        },
+        showIcon: true,
+        indicatorStyle: {
+          backgroundColor: COLORS.blue,
+          height: '100%',
+          borderRadius: 25,
+          elevation: 7
+        },
+        activeTintColor: COLORS.white,
+        inactiveTintColor: 'gray',
+        tabStyle: {
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }
+      }}
+    >
+      <Tab.Screen
+        name='Chi tiêu'
+        component={TransactionsTab}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Image
+                source={detail}
+                style={{ ...styles.icon, tintColor: color }}
+              />
+            </View>
+          ),
+        }}
       />
-      <View style={{ padding: SIZES.padding }}>
-        <Text>Hello</Text>
-      </View>
-    </SafeAreaView >
-  );
+      <Tab.Screen
+        name='Danh mục'
+        component={CategoriesTab}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Image
+                source={category}
+                style={{ ...styles.icon, tintColor: color }}
+              />
+            </View>
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  )
 };
 
-
 const styles = StyleSheet.create({
+  icon: {
+    height: 20,
+    width: 20,
+  },
   shadow: {
     shadowColor: "#000",
     shadowOffset: {
-      width: 2,
-      height: 2,
+      width: 0,
+      height: 3,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3,
-  },
-  container: {
-    borderRadius: 40,
-    padding: 22,
-    width: '100%'
-  },
-
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7,
+  }
 })
-
 
 export default HomeScreen;
