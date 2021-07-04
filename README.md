@@ -8,15 +8,15 @@
 
 ---
 
-1. [Chức năng](#Chức năng)
-   - [Xem các danh sách chi tiêu](#Xem các danh sách chi tiêu)
-   - [Xem các danh sách phân loại](#Xem các danh sách phân loại)
-   - [Xem chi tiết chi tiêu](#Xem chi tiết chi tiêu)
-   - [Thêm/sửa chi tiêu](#Thêm/sửa chi tiêu)
-   - [Thêm/sửa phân loại](#Thêm/sửa phân loại)
-2. [Yêu cầu thiết bị](#Yêu cầu thiết bị)
-3. [Thư viện và công nghệ](#Thư viện và công nghệ)
-4. [Tác giả](#Tác giả)
+1. [Chức năng](#Chức-năng)
+   - [Xem các danh sách chi tiêu](#Xem-các-danh-sách-chi-tiêu)
+   - [Xem các danh sách phân loại](#Xem-các-danh-sách-phân-loại)
+   - [Xem chi tiết chi tiêu](#Xem-chi-tiết-chi-tiêu)
+   - [Thêm/sửa chi tiêu](#Thêm/sửa-chi-tiêu)
+   - [Thêm/sửa phân loại](#Thêm/sửa-phân-loại)
+2. [Yêu cầu thiết bị](#Yêu-cầu-thiết-bị)
+3. [Thư viện và công nghệ](#Thư-viện-và-công-nghệ)
+4. [Tác giả](#Tác-giả)
 
 ## Chức năng
 
