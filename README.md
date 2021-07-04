@@ -1,12 +1,8 @@
 # Ứng dụng  ExpensesTracker - ứng dụng quản lý chi tiêu
 
-------
-
 Ứng dụng giúp người dùng dễ dàng xem lại các chi tiêu đưa ra và thu nhập của bản thân, phân loại các chi tiêu theo ý của bản thân.
 
 ## Nội dung
-
----
 
 1. [Chức năng](#Chức-năng)
    - [Xem các danh sách chi tiêu](#Xem-các-danh-sách-chi-tiêu)
@@ -19,8 +15,6 @@
 4. [Tác giả](#Tác-giả)
 
 ## Chức năng
-
----
 
 ### Xem các danh sách chi tiêu
 
@@ -44,16 +38,12 @@
 
 ## Yêu cầu thiết bị
 
----
-
 - Android:
   - Minimun API: 23
   - Targer API: 29
   - Gradle: 4.2
 
 ## Thư viện và công nghệ
-
----
 
 - Language: JavaScript
 - Framework: React Native 0.64
@@ -71,8 +61,6 @@
 - react-native-actions-sheet: https://github.com/ammarahm-ed/react-native-actions-sheet
 
 ## Tác giả
-
----
 
 1. Hoàng Lê Trung Hậu - 19521484
 2. Văn Quốc Huy - 19520607
