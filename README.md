@@ -8,7 +8,15 @@
 
 ---
 
-[TOC]
+1. [Chức năng](#Chức năng)
+   - [Xem các danh sách chi tiêu](#Xem các danh sách chi tiêu)
+   - [Xem các danh sách phân loại](#Xem các danh sách phân loại)
+   - [Xem chi tiết chi tiêu](#Xem chi tiết chi tiêu)
+   - [Thêm/sửa chi tiêu](#Thêm/sửa chi tiêu)
+   - [Thêm/sửa phân loại](#Thêm/sửa phân loại)
+2. [Yêu cầu thiết bị](#Yêu cầu thiết bị)
+3. [Thư viện và công nghệ](#Thư viện và công nghệ)
+4. [Tác giả](#Tác giả)
 
 ## Chức năng
 
@@ -16,23 +24,32 @@
 
 ### Xem các danh sách chi tiêu
 
-<img src=".\image\Screenshot_1625370715.png" alt="Screenshot_1625370715" height = "480" width="270" />
+<img src=".\image\Screenshot_1625370715.png" alt="Screenshot_1625370715" height = "550" width="270" />
 
 ### Xem danh sách phân loại
 
-<img src=".\image\Screenshot_1625370776.png" alt="Screenshot_1625370776" height = "480" width="270" />
+<img src=".\image\Screenshot_1625370776.png" alt="Screenshot_1625370776" height = "550" width="270" />
 
 ### Xem chi tiết chi tiêu
 
-<img src=".\image\Screenshot_1625370942.png" alt="Screenshot_1625370942" height = "480" width="270" /><img src=".\image\Screenshot_1625370873.png" alt="Screenshot_1625370873" height = "480" width="270" />
+<img src=".\image\Screenshot_1625370942.png" alt="Screenshot_1625370942" height = "550" width="270" /><img src=".\image\Screenshot_1625370873.png" alt="Screenshot_1625370873" height = "550" width="270" />
 
 ### Thêm/sửa chi tiêu
 
-<img src=".\image\Screenshot_1625371075.png" alt="Screenshot_1625371075" height = "480" width="270" /><img src=".\image\Screenshot_1625371083.png" alt="Screenshot_1625371083" height = "480" width="270" />
+<img src=".\image\Screenshot_1625371075.png" alt="Screenshot_1625371075" height = "550" width="270" /><img src=".\image\Screenshot_1625371083.png" alt="Screenshot_1625371083" height = "550" width="270" />
 
 ### Thêm/sửa phân loại
 
-<img src=".\image\Screenshot_1625371202.png" alt="Screenshot_1625371202" height = "480" width="270" /><img src=".\image\Screenshot_1625371213.png" alt="Screenshot_1625371213" height = "480" width="270" />
+<img src=".\image\Screenshot_1625371202.png" alt="Screenshot_1625371202" height = "550" width="270" /><img src=".\image\Screenshot_1625371213.png" alt="Screenshot_1625371213" height = "550" width="270" />
+
+## Yêu cầu thiết bị
+
+---
+
+- Android:
+  - Minimun API: 23
+  - Targer API: 29
+  - Gradle: 4.2
 
 ## Thư viện và công nghệ
 
