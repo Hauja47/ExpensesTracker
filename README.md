@@ -40,7 +40,7 @@
 
 - Android:
   - Minimun API: 23
-  - Targert API: 29
+  - Target API: 29
   - Gradle: 4.2
 
 ## Thư viện và công nghệ
